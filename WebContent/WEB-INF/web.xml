@@ -10,8 +10,16 @@
       <servlet-name>Processor</servlet-name>
       <servlet-class>com.sms.Processor</servlet-class>
   </servlet>
+  <servlet>
+      <servlet-name>Offer</servlet-name>
+      <servlet-class>com.sms.Offer</servlet-class>
+  </servlet>
   <servlet-mapping>
     <servlet-name>Processor</servlet-name>
     <url-pattern>/processor</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>Offer</servlet-name>
+    <url-pattern>/offer</url-pattern>
   </servlet-mapping>
 </web-app>

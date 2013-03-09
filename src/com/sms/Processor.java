@@ -29,6 +29,7 @@ public class Processor extends HttpServlet
     private String currentClassName;
     private static int expiryHours = 24;
     private static String baseOfferUrl = "http://sms.paidpunch.com/offer?Code=";
+    private static String errorMsg = "We're experiencing some difficulties. Please try again later.";
       
     public Processor() 
     {  
@@ -55,30 +56,39 @@ public class Processor extends HttpServlet
     @Override  
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
     {  
+        String responseString = null;
         String fromString = request.getParameter("From");
         String bodyString = request.getParameter("Body");
-        String bizCode = bodyString.trim();
-        bizCode = bizCode.toUpperCase();
-        
-        String responseString = checkIfOfferExists(fromString, bizCode);
-        if (responseString == null)
+        if (fromString == null || bodyString == null)
         {
-            String offerBizCode = BusinessesList.getInstance().getBusinessesCloseBy(bizCode);
-            if (offerBizCode != null)
+            responseString = errorMsg;
+        }
+        else
+        {
+            String bizCode = bodyString.trim();
+            bizCode = bizCode.toUpperCase();
+            
+            responseString = checkIfOfferExists(fromString, bizCode);
+            if (responseString == null)
             {
-                String offerId = createOffer(fromString, offerBizCode, bizCode);    
-                responseString = baseOfferUrl + offerId;    
-            }
-            else
-            {
-                SimpleLogger.getInstance().error(currentClassName, "ErrorOccurred");
-                responseString = "We're experiencing some difficulties. Please try again later.";
-            }
+                String offerBizCode = BusinessesList.getInstance().getBusinessesCloseBy(bizCode);
+                if (offerBizCode != null)
+                {
+                    String offerId = createOffer(fromString, offerBizCode, bizCode);    
+                    responseString = baseOfferUrl + offerId;    
+                }
+                else
+                {
+                    SimpleLogger.getInstance().error(currentClassName, "ErrorOccurred");
+                    responseString = errorMsg;
+                }
+            }  
         }
         
         TwiMLResponse twiml = new TwiMLResponse();
         Sms sms = new Sms(responseString);
-        try {
+        try 
+        {
             twiml.append(sms);
         } 
         catch (TwiMLException e) 
@@ -87,7 +97,7 @@ public class Processor extends HttpServlet
         }
  
         response.setContentType("application/xml");
-        response.getWriter().print(twiml.toXML());
+        response.getWriter().print(twiml.toXML());  
     } 
     
     private String createOffer(String fromNumber, String offerBizCode, String bizCode)
