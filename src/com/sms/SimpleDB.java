@@ -29,7 +29,7 @@ public class SimpleDB
 		try
 		{
 			sdb = new AmazonSimpleDBClient(new PropertiesCredentials(
-					this.getClass().getClassLoader().getResourceAsStream("com/db/AwsCredentials.properties")));
+					this.getClass().getClassLoader().getResourceAsStream("com/sms/AwsCredentials.properties")));
 			sdb.setEndpoint("sdb.us-west-2.amazonaws.com");
 			currentClassName = SimpleDB.class.getSimpleName();
 		}

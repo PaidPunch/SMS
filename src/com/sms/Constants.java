@@ -37,13 +37,11 @@ public class Constants
     public static String AMOUNT_PARAMNAME = "Amount";
     
     // SimpleDB domain names
-    public static String BUSINESSES_DOMAIN = "Businesses";
-    public static String RECORDS_DOMAIN = "Records";
-    public static String REQUESTINVITES_DOMAIN = "RequestInvites";
     public static String SUGGESTBUSINESSES_DOMAIN = "SuggestBusinesses";
     public static String VOTES_DOMAIN = "Votes";
     public static String CODES_DOMAIN = "Codes";
-    public static String CREDITCHANGE_DOMAIN = "CreditChangeHistory";
+    public static String OFFERS_DOMAIN = "Offers";
+    public static String COOPCODES_DOMAIN = "CoopCodes";
 
     // Used in database connection
     public static String JDBC_DRIVER = "com.mysql.jdbc.Driver";
@@ -81,13 +79,11 @@ public class Constants
             USERID = "paidpunchprod";
             PASSWORD = "Biscuit-1";
             
-            BUSINESSES_DOMAIN = "Businesses";
-            RECORDS_DOMAIN = "Records";
-            REQUESTINVITES_DOMAIN = "RequestInvites";
             SUGGESTBUSINESSES_DOMAIN = "SuggestBusinesses";
             VOTES_DOMAIN = "Votes";
             CODES_DOMAIN = "Codes";
-            CREDITCHANGE_DOMAIN = "CreditChangeHistory";
+            OFFERS_DOMAIN = "Offers";
+            COOPCODES_DOMAIN = "CoopCodes";
             
             MAILCHIMP_LIST_ID = "e7350c242f";
         }
@@ -100,13 +96,11 @@ public class Constants
             USERID = "paidpunch";
             PASSWORD = "Biscuit-1";
             
-            BUSINESSES_DOMAIN = "BusinessesTest";
-            RECORDS_DOMAIN = "RecordsTest";
-            REQUESTINVITES_DOMAIN = "RequestInvitesTest";
             SUGGESTBUSINESSES_DOMAIN = "SuggestBusinessesTest";
             VOTES_DOMAIN = "VotesTest";
             CODES_DOMAIN = "CodesTest";
-            CREDITCHANGE_DOMAIN = "CreditChangeHistoryTest";
+            OFFERS_DOMAIN = "OffersTest";
+            COOPCODES_DOMAIN = "CoopCodesTest";
             
             MAILCHIMP_LIST_ID = "4ded3248b9";
         }

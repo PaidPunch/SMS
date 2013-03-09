@@ -10,16 +10,27 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
 public final class Utility 
 {
+    private static final String ALPHA_NUM = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    
+    public static String getRandomAlphaNumericCode(int len) 
+    {
+        StringBuffer sb = new StringBuffer(len);
+        for (int i = 0; i < len; i++) 
+        {
+            int ndx = (int) (Math.random() * ALPHA_NUM.length());
+            sb.append(ALPHA_NUM.charAt(ndx));
+        }
+        return sb.toString();
+    }
+    
     public static int compareFloats(double f1, double f2, float delta)
     {
         if (Math.abs(f1 - f2) < delta)

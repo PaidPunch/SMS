@@ -5,9 +5,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.json.JSONArray;
+
+import com.amazonaws.services.simpledb.model.Attribute;
+import com.amazonaws.services.simpledb.model.Item;
 
 import com.sms.DatabaseAccess;
 import com.sms.DatabaseAccess.ResultSetHandler;
@@ -33,7 +37,8 @@ public class BusinessesList extends DataObjectBase
                 "a.address_id,a.address_line1,a.city,a.state,a.zipcode,a.longitude,a.latitude,a.region," +
                 "p.punch_card_id,p.no_of_punches_per_card,p.value_of_each_punch,p.selling_price_of_punch_card,p.restriction_time,p.punchcard_category,p.expirydays,p.minimumvalue,p.punchcard_code " +
                 "FROM business_users b, bussiness_address a, punch_card p " +
-                "WHERE b.business_userid = a.business_id AND b.business_userid = p.business_userid;";
+                "WHERE b.business_userid = a.business_id AND b.business_userid = p.business_userid AND " +
+                "a.city in ('Belleuve', 'Kirkland', 'Redmond');";
         try
         {
             DatabaseAccess.queryDatabaseCustom(queryString, null, currentBusinesses, new ResultSetHandler()
@@ -219,24 +224,62 @@ public class BusinessesList extends DataObjectBase
     }
     */
     
-    public Business getBusinessesCloseBy(String bizCode)
+    public String getBusinessesCloseBy(String bizCode)
     {
         // Refresh the data if necessary
         refreshBusinessesFromDatabaseIfNecessary();
         
+        double latitude = 0;
+        double longitude = 0;
         Business current = currentBusinesses.get(bizCode);
-        
-        // TODO: For now, assume a single business location
-        Map.Entry<String, BusinessBranch> entry = current.getBranches().entrySet().iterator().next();
-        BusinessBranch currentBranch = entry.getValue();
-        double latitude = Double.parseDouble(currentBranch.getLatitude());
-        double longitude = Double.parseDouble(currentBranch.getLongitude());
+        if (current != null)
+        {
+            // TODO: For now, assume a single business location
+            Map.Entry<String, BusinessBranch> entry = current.getBranches().entrySet().iterator().next();
+            BusinessBranch currentBranch = entry.getValue();
+            latitude = Double.parseDouble(currentBranch.getLatitude());
+            longitude = Double.parseDouble(currentBranch.getLongitude());
+        }
+        else
+        {
+            String queryString = "select `latitude`, `longitude` from `" + Constants.COOPCODES_DOMAIN + "` where `code` = '" + bizCode + "'";
+            SimpleDB sdb = SimpleDB.getInstance();
+            List<Item> items = sdb.selectQuery(queryString);
+            
+            if (items.size() >= 1)
+            {
+                if (items.size() > 1)
+                {
+                    // Warn if more than one item found
+                    SimpleLogger.getInstance().warn(currentClassName, "MultipleCoopCodeMatches|code:" + bizCode);
+                }
+                
+                // get the first item
+                Item currentItem = items.get(0);
+                
+                for (Attribute attribute : currentItem.getAttributes()) 
+                {
+                    if (attribute.getName().equals("latitude"))
+                    {
+                        latitude = Double.parseDouble(attribute.getValue());
+                    }
+                    else if (attribute.getName().equals("longitude"))
+                    {
+                        longitude = Double.parseDouble(attribute.getValue());
+                    }
+                }
+            }
+            else 
+            {
+                return null;
+            }
+        }
         
         ArrayList<Business> businessesCloseBy = getBusinessesCloseBy(bizCode, latitude, longitude);
         int sizeBusinessesCloseBy = businessesCloseBy.size();
         int index = (int)(Math.random() * sizeBusinessesCloseBy);
         
-        return businessesCloseBy.get(index);
+        return businessesCloseBy.get(index).getBusinessUserId();
     }
     
     private ArrayList<Business> getBusinessesCloseBy(String bizCode, double latitude, double longitude)
@@ -245,7 +288,7 @@ public class BusinessesList extends DataObjectBase
         for (Map.Entry<String, Business> entry : currentBusinesses.entrySet())
         {
             Business current = entry.getValue();
-            if (current.getBusiEnabled())
+            if (current.getBusiEnabled() && !current.getBusinessCode().equals(bizCode))
             {
                 arrayBusinesses.add(current);
             }

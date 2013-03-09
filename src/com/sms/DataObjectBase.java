@@ -1,4 +1,4 @@
-package com.server;
+package com.sms;
 
 import java.util.Date;
 
