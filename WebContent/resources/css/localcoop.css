@@ -1,0 +1,45 @@
+img {
+    max-width: 100%;
+    height: auto;
+    width: auto\9; /* ie8 */
+}
+
+.eggImg  { 
+  width:284px; 
+  height:368px; 
+  background-image:url('../../images/egg.png'); 
+  margin: 0 auto; 
+  position:relative;
+}
+  
+ .eggText { 
+  position: absolute; 
+  left: 42px; 
+  top: 64px; 
+  width: 200px; 
+  height: 240px; 
+  display: table; 
+}
+  
+.eggText p { 
+  display: table-cell; 
+  vertical-align: middle; 
+  text-align: center; 
+}
+
+/* Setting style for links */
+a:link {
+  color:#000000;
+}
+
+a:visited {
+  color:#000000;
+}  
+
+a:hover {
+  color:#000000;
+}  
+
+a:active {
+  color:#000000;
+}

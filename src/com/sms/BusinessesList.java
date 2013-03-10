@@ -296,6 +296,24 @@ public class BusinessesList extends DataObjectBase
         return arrayBusinesses;
     }
     
+    public Business getBusinessByBizCode(String bizCode)
+    {
+        // Refresh the data if necessary
+        refreshBusinessesFromDatabaseIfNecessary();
+        
+        Business foundBusiness = null;
+        for (Map.Entry<String, Business> entry : currentBusinesses.entrySet())
+        {
+            Business current = entry.getValue();
+            if (current.getBusiEnabled() && !current.getBusinessCode().equals(bizCode))
+            {
+                foundBusiness = current;
+            }
+        }
+        
+        return foundBusiness;
+    }
+    
     // Disable cloning for singletons
     public Object clone() throws CloneNotSupportedException 
     {
