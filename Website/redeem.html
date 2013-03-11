@@ -1,0 +1,142 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>LocalCoop - Local marketing for local businesses</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="assets/css/bootstrap.css" rel="stylesheet">
+    <link href="resources/css/localcoop.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+	  #page {
+  
+ 
+  
+}
+    </style>
+    <link href="assets/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="assets/js/html5shiv.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="assets/ico/apple-touch-icon-114-precomposed.png">
+      <link rel="apple-touch-icon-precomposed" sizes="72x72" href="assets/ico/apple-touch-icon-72-precomposed.png">
+                    <link rel="apple-touch-icon-precomposed" href="assets/ico/apple-touch-icon-57-precomposed.png">
+                                   <link rel="shortcut icon" href="assets/ico/favicon.png">
+                                   <!-- No browser bar -->
+  <meta name=viewport content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name=apple-mobile-web-app-capable content=yes>
+<meta name=apple-mobile-web-app-status-bar-style content=black>
+  </head>
+
+  <body>
+  <div id="page">
+  
+  <div class="container" id="center">
+  	<div class="row-fluid">
+    <img src="resources/img/animatedlogo-small.gif">
+    </div>
+    <div class="row-fluid">
+    	<h4>Taco Del Mar</h4>
+        <h3 id="offer-text">FREE drink with purchase of an entree</h3>
+    </div>
+    <div class="row-fluid">
+    	<img src="resources/img/you.png" class="img-circle" height="100" width="100">
+    </div>
+    <div class="row-fluid">
+    	<p></p>
+    </div>
+    <div class="row-fluid" id="pad-top-15">
+    	<a href="index.html" class="btn btn-large">Prize Used</a>
+    </div>
+    
+    
+  </div>
+  </div>
+  
+  <!-- Mobile No Broswer Bar -->
+  <script>
+var page = document.getElementById('page'),
+    ua = navigator.userAgent,
+    iphone = ~ua.indexOf('iPhone') || ~ua.indexOf('iPod'),
+    ipad = ~ua.indexOf('iPad'),
+    ios = iphone || ipad,
+    // Detect if this is running as a fullscreen app from the homescreen
+    fullscreen = window.navigator.standalone,
+    android = ~ua.indexOf('Android'),
+    lastWidth = 0;
+ 
+if (android) {
+  // Android's browser adds the scroll position to the innerHeight, just to
+  // make this really fucking difficult. Thus, once we are scrolled, the
+  // page height value needs to be corrected in case the page is loaded
+  // when already scrolled down. The pageYOffset is of no use, since it always
+  // returns 0 while the address bar is displayed.
+  window.onscroll = function() {
+    page.style.height = window.innerHeight + 'px'
+  } 
+}
+var setupScroll = window.onload = function() {
+  // Start out by adding the height of the location bar to the width, so that
+  // we can scroll past it
+  if (ios) {
+    // iOS reliably returns the innerWindow size for documentElement.clientHeight
+    // but window.innerHeight is sometimes the wrong value after rotating
+    // the orientation
+    var height = document.documentElement.clientHeight;
+    // Only add extra padding to the height on iphone / ipod, since the ipad
+    // browser doesn't scroll off the location bar.
+    if (iphone && !fullscreen) height += 85;
+    page.style.height = height + 'px';
+  } else if (android) {
+    // The stock Android browser has a location bar height of 56 pixels, but
+    // this very likely could be broken in other Android browsers.
+    page.style.height = (window.innerHeight + 56) + 'px'
+  }
+  // Scroll after a timeout, since iOS will scroll to the top of the page
+  // after it fires the onload event
+  setTimeout(scrollTo, 0, 0, 1);
+};
+(window.onresize = function() {
+  var pageWidth = page.offsetWidth;
+  // Android doesn't support orientation change, so check for when the width
+  // changes to figure out when the orientation changes
+  if (lastWidth == pageWidth) return;
+  lastWidth = pageWidth;
+  setupScroll();
+})();
+</script>
+
+<!-- END -->
+  
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="assets/js/jquery.js"></script>
+    <script src="assets/js/bootstrap-transition.js"></script>
+    <script src="assets/js/bootstrap-alert.js"></script>
+    <script src="assets/js/bootstrap-modal.js"></script>
+    <script src="assets/js/bootstrap-dropdown.js"></script>
+    <script src="assets/js/bootstrap-scrollspy.js"></script>
+    <script src="assets/js/bootstrap-tab.js"></script>
+    <script src="assets/js/bootstrap-tooltip.js"></script>
+    <script src="assets/js/bootstrap-popover.js"></script>
+    <script src="assets/js/bootstrap-button.js"></script>
+    <script src="assets/js/bootstrap-collapse.js"></script>
+    <script src="assets/js/bootstrap-carousel.js"></script>
+    <script src="assets/js/bootstrap-typeahead.js"></script>
+
+  </body>
+</html>
