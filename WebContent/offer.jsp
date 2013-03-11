@@ -16,13 +16,21 @@
 
   <!-- Le styles -->
   <style type="text/css">
-    body 
+    a:link 
     {
-      padding-top: 60px;
-      padding-bottom: 40px;
+      color:#000000;
     }
-    #page 
+    a:visited 
     {
+      color:#000000;
+    }  
+    a:hover 
+    {
+      color:#000000;
+    }  
+    a:active 
+    {
+      color:#000000;
     }
   </style>                                 
 </head>
@@ -36,9 +44,9 @@
       <div class="eggImg">
         <div class="eggText">
           <h3>Congratulations!</h3>
-             <h5>You won a prize from<br>
+             <h4>You won a prize from<br>
                  ${business_name}.<br>
-                 Crack the egg to claim it!</h5>
+                 Crack the egg to claim it!</h4>
         </div>
       </div>
     </a>

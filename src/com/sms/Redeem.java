@@ -113,6 +113,7 @@ public class Redeem extends HttpServlet
                     request.setAttribute("address", address);
                     request.setAttribute("latitude", currentBranch.getLatitude());
                     request.setAttribute("longitude", currentBranch.getLongitude());
+                    request.setAttribute("phone", currentBranch.getContactNo());
                     request.setAttribute("discount", currentOffer.getValuePerPunch());
                     request.setAttribute("minvalue", currentOffer.getMinValue());
                     request.setAttribute("expirydate", offerInfo.get("expiryDatetime"));
