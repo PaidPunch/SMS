@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -55,7 +54,7 @@ public class Redeem extends HttpServlet
         HashMap<String,String> current = null;
         try
         {
-            SimpleDateFormat datetimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT);
+            SimpleDateFormat datetimeFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss aa z");
             datetimeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
             String currentDatetime = datetimeFormat.format(new java.util.Date().getTime()); 
             

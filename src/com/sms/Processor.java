@@ -106,7 +106,7 @@ public class Processor extends HttpServlet
         
         // Get current datetime
         Date currentDate = new java.util.Date();
-        SimpleDateFormat datetimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT);
+        SimpleDateFormat datetimeFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss aa z");
         datetimeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         String currentDatetime = datetimeFormat.format(currentDate.getTime()); 
         

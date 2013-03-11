@@ -15,12 +15,24 @@
       <img src="images/localcoop-logo-small.png" alt="LocalCoop">
     </div>
     <div>
-      <p><h1>${name}</h1></p>
+      <p>${name}</p>
       <img src="<%= request.getAttribute("logo") %>" alt="<%= request.getAttribute("name") %>">
       <p>${desc}</p>
       <p>${address}</p>
       <p><b>Discount: $ ${discount} off on purchases of $ ${minvalue} or more</b></p>
-      <p><b>This offer expires on: ${expirydate}</b></p>
+      <p><b>This offer will expire in:</b></p>
+      
+      <script language="JavaScript">
+      TargetDate = "<%= request.getAttribute("expirydate") %>";
+      BackColor = "white";
+      ForeColor = "darkred";
+      CountActive = true;
+      CountStepper = -1;
+      LeadingZero = true;
+      DisplayFormat = "%%D%% Days, %%H%% Hours, %%M%% Minutes, %%S%% Seconds.";
+      FinishMessage = "Coupon Expired!";
+      </script>
+      <script language="JavaScript" src="resources/js/countdown.js"></script>
     </div>
   </div>
 </body>
