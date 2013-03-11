@@ -305,9 +305,10 @@ public class BusinessesList extends DataObjectBase
         for (Map.Entry<String, Business> entry : currentBusinesses.entrySet())
         {
             Business current = entry.getValue();
-            if (current.getBusiEnabled() && !current.getBusinessCode().equals(bizCode))
+            if (current.getBusiEnabled() && current.getBusinessUserId().equals(bizCode))
             {
                 foundBusiness = current;
+                break;
             }
         }
         

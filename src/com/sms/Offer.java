@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.amazonaws.services.simpledb.model.Attribute;
 import com.amazonaws.services.simpledb.model.Item;
 
 public class Offer extends HttpServlet 
@@ -66,10 +67,18 @@ public class Offer extends HttpServlet
                     SimpleLogger.getInstance().warn(currentClassName, "MultipleActiveOffers|itemName:" + code);
                 }
                 
-                Business current = BusinessesList.getInstance().getBusinessByBizCode(code);
-                if (current != null)
+                Item currentItem = queryList.get(0);
+                for (Attribute attribute : currentItem.getAttributes()) 
                 {
-                    businessName = current.getName();
+                    if (attribute.getName().equals("offerBizCode"))
+                    {
+                        Business current = BusinessesList.getInstance().getBusinessByBizCode(attribute.getValue());
+                        if (current != null)
+                        {
+                            businessName = current.getName();
+                        }
+                        break;
+                    }
                 }
             }
         }

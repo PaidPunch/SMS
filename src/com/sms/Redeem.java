@@ -2,6 +2,7 @@ package com.sms;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -49,9 +50,9 @@ public class Redeem extends HttpServlet
         return BusinessesList.getInstance().getBusinessByBizCode(code);
     }
     
-    private String getExpiryDateOfPunch(String code)
+    private HashMap<String,String> getOfferInfo(String code)
     {
-        String current = null;
+        HashMap<String,String> current = null;
         try
         {
             SimpleDateFormat datetimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT);
@@ -72,13 +73,11 @@ public class Redeem extends HttpServlet
                     SimpleLogger.getInstance().warn(currentClassName, "MultipleActiveOffers|itemName:" + code);
                 }
                 
+                current = new HashMap<String,String>();
                 Item currentItem = queryList.get(0);
                 for (Attribute attribute : currentItem.getAttributes()) 
                 {
-                    if (attribute.getName().equals("expiryDatetime"))
-                    {
-                        current = attribute.getValue();
-                    }
+                    current.put(attribute.getName(), attribute.getValue());
                 }
             }
         }
@@ -95,10 +94,10 @@ public class Redeem extends HttpServlet
         String codeString = request.getParameter("Code");
         if (codeString != null)
         {
-            String expiryDatetime = getExpiryDateOfPunch(codeString);
-            if (expiryDatetime != null)
+            HashMap<String,String> offerInfo = getOfferInfo(codeString);
+            if (offerInfo != null)
             {
-                Business currentBiz = getBusiness(codeString);
+                Business currentBiz = getBusiness(offerInfo.get("offerBizCode"));
                 if (currentBiz != null)
                 {
                     // TODO: Assume single branch and offer for now
@@ -117,7 +116,7 @@ public class Redeem extends HttpServlet
                     request.setAttribute("longitude", currentBranch.getLongitude());
                     request.setAttribute("discount", currentOffer.getValuePerPunch());
                     request.setAttribute("minvalue", currentOffer.getMinValue());
-                    request.setAttribute("expirydate", expiryDatetime);
+                    request.setAttribute("expirydate", offerInfo.get("expiryDatetime"));
                     request.getRequestDispatcher("/redeem.jsp").forward(request, response);    
                 }
                 else
