@@ -224,7 +224,7 @@ public class BusinessesList extends DataObjectBase
     }
     */
     
-    public String getBusinessesCloseBy(String bizCode)
+    public Business getBusinessesCloseBy(String bizCode)
     {
         // Refresh the data if necessary
         refreshBusinessesFromDatabaseIfNecessary();
@@ -276,10 +276,17 @@ public class BusinessesList extends DataObjectBase
         }
         
         ArrayList<Business> businessesCloseBy = getBusinessesCloseBy(bizCode, latitude, longitude);
-        int sizeBusinessesCloseBy = businessesCloseBy.size();
-        int index = (int)(Math.random() * sizeBusinessesCloseBy);
-        
-        return businessesCloseBy.get(index).getBusinessUserId();
+        if (businessesCloseBy.size() > 0)
+        {
+            int sizeBusinessesCloseBy = businessesCloseBy.size();
+            int index = (int)(Math.random() * sizeBusinessesCloseBy);
+            
+            return businessesCloseBy.get(index);    
+        }
+        else
+        {
+            return null;
+        }
     }
     
     private ArrayList<Business> getBusinessesCloseBy(String bizCode, double latitude, double longitude)

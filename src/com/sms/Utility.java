@@ -12,6 +12,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
@@ -45,6 +46,24 @@ public final class Utility
                 return 1;
             }
         }
+    }
+    
+    public static String getCurrentDatetimeInUTC()
+    {
+        SimpleDateFormat datetimeFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss aa z");
+        datetimeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return datetimeFormat.format(new java.util.Date().getTime()); 
+    }
+    
+    public static String standardizePhoneNumber(String originalPhone)
+    {
+        String newPhone = originalPhone;
+        // if phone number is of length 10, then it's just straight numbers
+        if (newPhone.length() == 10)
+        {
+            newPhone = newPhone.substring(0, 3) + "-" + newPhone.substring(3, 6) + "-" + newPhone.substring(6);
+        }
+        return newPhone;
     }
 
     /**

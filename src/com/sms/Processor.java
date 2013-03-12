@@ -1,5 +1,6 @@
 package com.sms;
 
+import com.amazonaws.services.simpledb.model.Attribute;
 import com.amazonaws.services.simpledb.model.Item;
 import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
 
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 
 import javax.servlet.ServletConfig;
@@ -28,7 +29,9 @@ public class Processor extends HttpServlet
     private static final long serialVersionUID = 1L;  
     private String currentClassName;
     private static int expiryHours = 24;
-    private static String baseOfferUrl = "http://sms.paidpunch.com/offer?Code=";
+    private static String reminderString = "You have a prize waiting from ";
+    private static String congratsString = "Congratulations! You won a prize from ";
+    private static String baseOfferUrl = " http://sms.paidpunch.com/offer?Code=";
     private static String errorMsg = "We're experiencing some difficulties. Please try again later.";
       
     public Processor() 
@@ -71,11 +74,11 @@ public class Processor extends HttpServlet
             responseString = checkIfOfferExists(fromString, bizCode);
             if (responseString == null)
             {
-                String offerBizCode = BusinessesList.getInstance().getBusinessesCloseBy(bizCode);
-                if (offerBizCode != null)
+                Business currentBiz = BusinessesList.getInstance().getBusinessesCloseBy(bizCode);
+                if (currentBiz != null)
                 {
-                    String offerId = createOffer(fromString, offerBizCode, bizCode);    
-                    responseString = baseOfferUrl + offerId;    
+                    String offerId = createOffer(fromString, currentBiz, bizCode);    
+                    responseString = congratsString + currentBiz.getName() + baseOfferUrl + offerId;    
                 }
                 else
                 {
@@ -100,7 +103,7 @@ public class Processor extends HttpServlet
         response.getWriter().print(twiml.toXML());  
     } 
     
-    private String createOffer(String fromNumber, String offerBizCode, String bizCode)
+    private String createOffer(String fromNumber, Business currentBiz, String bizCode)
     {
         String offerID = Utility.getRandomAlphaNumericCode(7);
         
@@ -108,7 +111,7 @@ public class Processor extends HttpServlet
         Date currentDate = new java.util.Date();
         SimpleDateFormat datetimeFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss aa z");
         datetimeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-        String currentDatetime = datetimeFormat.format(currentDate.getTime()); 
+        String currentDatetime = Utility.getCurrentDatetimeInUTC();
         
         // Get expiry datetime
         Calendar cal = Calendar.getInstance();
@@ -117,10 +120,16 @@ public class Processor extends HttpServlet
         Date expiryDate = cal.getTime();
         String expiryDateTime = datetimeFormat.format(expiryDate.getTime()); 
         
+        // TODO: Get first offer. Assume there's only one for now.
+        Map.Entry<String, Punchcard> entry = currentBiz.getPunchcards().entrySet().iterator().next();
+        Punchcard currentOffer = entry.getValue();
+        
         List<ReplaceableAttribute> listAttributes = new ArrayList<ReplaceableAttribute>();
         listAttributes.add(new ReplaceableAttribute("version", "1.0", true));
         listAttributes.add(new ReplaceableAttribute("phone", fromNumber, true));
-        listAttributes.add(new ReplaceableAttribute("offerBizCode", offerBizCode, true));
+        listAttributes.add(new ReplaceableAttribute("offerBizCode", currentBiz.getBusinessUserId(), true));
+        listAttributes.add(new ReplaceableAttribute("name", currentBiz.getName(), true));
+        listAttributes.add(new ReplaceableAttribute("offerId", currentOffer.getPunchcardId(), true));
         listAttributes.add(new ReplaceableAttribute("bizCode", bizCode, true));
         listAttributes.add(new ReplaceableAttribute("createdDatetime", currentDatetime, true));
         listAttributes.add(new ReplaceableAttribute("expiryDatetime", expiryDateTime, true));
@@ -136,9 +145,7 @@ public class Processor extends HttpServlet
         String responseString = null;
         try
         {
-            SimpleDateFormat datetimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT);
-            datetimeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-            String currentDatetime = datetimeFormat.format(new java.util.Date().getTime()); 
+            String currentDatetime = Utility.getCurrentDatetimeInUTC();
             
             SimpleDB sdb = SimpleDB.getInstance();
             String allQuery = "select * from `" + Constants.OFFERS_DOMAIN + 
@@ -157,8 +164,19 @@ public class Processor extends HttpServlet
                 // Get the first row
                 Item current = queryList.get(0);
                 
+                // Get the business name
+                String bizName = "";
+                for (Attribute attribute : current.getAttributes()) 
+                {
+                    if (attribute.getName().equals("name"))
+                    {
+                        bizName = attribute.getValue();
+                        break;
+                    }
+                }
+                
                 // Get the item name and construct the responseString
-                responseString = baseOfferUrl + current.getName();
+                responseString = reminderString + bizName + baseOfferUrl + current.getName();
             }
         }
         catch (Exception ex)

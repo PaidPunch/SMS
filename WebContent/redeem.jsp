@@ -16,20 +16,31 @@
 </head>
 
 <body>
+  <script language="JavaScript">
+    var lastFired = new Date().getTime();
+    setInterval(function() 
+    {
+        now = new Date().getTime();
+        if(now - lastFired > 5000) 
+        {
+        	 // if it's been more than 5 seconds
+           document.location.reload(true);
+        }
+        lastFired = now;
+    }, 500);
+  </script>
+  
   <div style="text-align:center;">
     <div>
-      <img src="images/localcoop-logo-small.png" alt="LocalCoop">
+      <img src="images/animatedlogo-small.gif" alt="LocalCoop">
     </div>
     <div>
-      <h4>${name}</h4>
-      <img src="<%= request.getAttribute("logo") %>" alt="<%= request.getAttribute("name") %>">
-      <h4>${desc}</h4>
-      <h4><a href="https://maps.google.com/?q=<%= request.getAttribute("address") %>">${address}</a></h4>
-      <h4>Telephone: <a href="tel:<%= request.getAttribute("phone") %>">${phone}</a></h4>
-      <h4><b>Discount: $ ${discount} off on purchases of $ ${minvalue} or more</b></h4>
-      <h4><b>This offer will expire in:</b></h4>
+      <h2><b>$ ${discount} off on purchases of $ ${minvalue} or more</b></h2>
+      <h2><b>Show Phone To Cashier To Redeem Offer</b></h2>
+      ${couponcode}
+      <h4><b>Offer expires in:</b></h4>
       
-      <h1>
+      <h3>
       <script language="JavaScript">
       TargetDate = "<%= request.getAttribute("expirydate") %>";
       BackColor = "white";
@@ -37,11 +48,16 @@
       CountActive = true;
       CountStepper = -1;
       LeadingZero = true;
-      DisplayFormat = "%%D%% Days, %%H%% Hours, %%M%% Minutes, %%S%% Seconds.";
+      DisplayFormat = "%%H%%:%%M%%:%%S%%";
       FinishMessage = "Coupon Expired!";
       </script>
       <script language="JavaScript" src="resources/js/countdown.js"></script>
-      </h1>
+      </h3>
+      <img src="<%= request.getAttribute("logo") %>" alt="<%= request.getAttribute("name") %>">
+      <h4>${name}</h4>
+      <h4>${desc}</h4>
+      <p><a href="https://maps.google.com/?q=<%= request.getAttribute("address") %>">${address}</a></p>
+      <p><a href="tel:<%= request.getAttribute("phone") %>">${phone}</a></p>
     </div>
   </div>
 </body>

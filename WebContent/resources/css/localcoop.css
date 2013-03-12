@@ -26,6 +26,12 @@ body {
   display: table; 
 }
   
+.eggText h2 { 
+  display: table-row; 
+  vertical-align: middle; 
+  text-align: center; 
+}
+  
 .eggText h4 { 
   display: table-row; 
   vertical-align: middle; 
@@ -33,6 +39,12 @@ body {
 }
 
 .eggText h5 { 
+  display: table-row; 
+  vertical-align: middle; 
+  text-align: center; 
+}
+
+.eggText p { 
   display: table-row; 
   vertical-align: middle; 
   text-align: center; 

@@ -1,11 +1,9 @@
 package com.sms;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -54,9 +52,7 @@ public class Redeem extends HttpServlet
         HashMap<String,String> current = null;
         try
         {
-            SimpleDateFormat datetimeFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss aa z");
-            datetimeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-            String currentDatetime = datetimeFormat.format(new java.util.Date().getTime()); 
+            String currentDatetime = Utility.getCurrentDatetimeInUTC();
             
             SimpleDB sdb = SimpleDB.getInstance();
             String allQuery = "select offerBizCode, expiryDatetime from `" + Constants.OFFERS_DOMAIN + 
@@ -113,10 +109,17 @@ public class Redeem extends HttpServlet
                     request.setAttribute("address", address);
                     request.setAttribute("latitude", currentBranch.getLatitude());
                     request.setAttribute("longitude", currentBranch.getLongitude());
-                    request.setAttribute("phone", currentBranch.getContactNo());
+                    request.setAttribute("phone", Utility.standardizePhoneNumber(currentBranch.getContactNo()));
                     request.setAttribute("discount", currentOffer.getValuePerPunch());
                     request.setAttribute("minvalue", currentOffer.getMinValue());
                     request.setAttribute("expirydate", offerInfo.get("expiryDatetime"));
+                    
+                    String codeText = currentOffer.getCouponCode();
+                    if (codeText.length() > 0)
+                    {
+                        String couponCodeString = "<h2><b>Code: " + codeText + "</b></h2>";
+                        request.setAttribute("couponcode", couponCodeString);
+                    }
                     request.getRequestDispatcher("/redeem.jsp").forward(request, response);    
                 }
                 else

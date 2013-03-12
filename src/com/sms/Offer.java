@@ -1,9 +1,7 @@
 package com.sms;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.TimeZone;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -48,12 +46,10 @@ public class Offer extends HttpServlet
         String businessName = null;
         try
         {
-            SimpleDateFormat datetimeFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss aa z");
-            datetimeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-            String currentDatetime = datetimeFormat.format(new java.util.Date().getTime()); 
+            String currentDatetime = Utility.getCurrentDatetimeInUTC();
             
             SimpleDB sdb = SimpleDB.getInstance();
-            String allQuery = "select offerBizCode from `" + Constants.OFFERS_DOMAIN + 
+            String allQuery = "select name from `" + Constants.OFFERS_DOMAIN + 
                     "` where itemName() = '" + code + 
                     "' and `expiryDatetime` > '" + currentDatetime + "'";
             SimpleLogger.getInstance().info(currentClassName, allQuery);
@@ -69,13 +65,9 @@ public class Offer extends HttpServlet
                 Item currentItem = queryList.get(0);
                 for (Attribute attribute : currentItem.getAttributes()) 
                 {
-                    if (attribute.getName().equals("offerBizCode"))
+                    if (attribute.getName().equals("name"))
                     {
-                        Business current = BusinessesList.getInstance().getBusinessByBizCode(attribute.getValue());
-                        if (current != null)
-                        {
-                            businessName = current.getName();
-                        }
+                        businessName = attribute.getValue();
                         break;
                     }
                 }
