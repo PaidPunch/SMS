@@ -38,7 +38,8 @@ public class BusinessesList extends DataObjectBase
                 "p.punch_card_id,p.no_of_punches_per_card,p.value_of_each_punch,p.selling_price_of_punch_card,p.restriction_time,p.punchcard_category,p.expirydays,p.minimumvalue,p.punchcard_code " +
                 "FROM business_users b, bussiness_address a, punch_card p " +
                 "WHERE b.business_userid = a.business_id AND b.business_userid = p.business_userid AND " +
-                "a.city in ('Belleuve', 'Kirkland', 'Redmond');";
+                "a.city in ('Bellevue', 'Kirkland', 'Redmond') AND " +
+                "b.business_userid != 506;";
         try
         {
             DatabaseAccess.queryDatabaseCustom(queryString, null, currentBusinesses, new ResultSetHandler()

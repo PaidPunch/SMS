@@ -1,9 +1,11 @@
 package com.sms;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -14,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.amazonaws.services.simpledb.model.Attribute;
 import com.amazonaws.services.simpledb.model.Item;
+import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
 
 public class Redeem extends HttpServlet 
 {
@@ -82,6 +85,22 @@ public class Redeem extends HttpServlet
         }
         return current;
     }
+    
+    private void recordRedeemView(String offerId)
+    {
+     // Get UUID for naming new suggestion
+        UUID itemName = UUID.randomUUID();
+        
+        String currentDatetime = Utility.getCurrentDatetimeInUTC();
+        
+        List<ReplaceableAttribute> listAttributes = new ArrayList<ReplaceableAttribute>();
+        listAttributes.add(new ReplaceableAttribute("version", "1.0", true));
+        listAttributes.add(new ReplaceableAttribute("offerId", offerId, true));
+        listAttributes.add(new ReplaceableAttribute("createdDatetime", currentDatetime, true));
+        
+        SimpleDB sdb = SimpleDB.getInstance();
+        sdb.updateItem(Constants.REDEEMRECORD_DOMAIN, itemName.toString(), listAttributes);
+    }
       
     @Override  
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
@@ -89,6 +108,8 @@ public class Redeem extends HttpServlet
         String codeString = request.getParameter("Code");
         if (codeString != null)
         {
+            recordRedeemView(codeString);
+            
             HashMap<String,String> offerInfo = getOfferInfo(codeString);
             if (offerInfo != null)
             {

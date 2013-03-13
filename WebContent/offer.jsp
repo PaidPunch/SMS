@@ -46,7 +46,7 @@
           <h3>Congratulations!</h3>
              <h4>You won a prize from<br>
                  ${business_name}.<br>
-                 Crack the egg to claim it!</h4>
+                 Tap on the egg to claim it!</h4>
         </div>
       </div>
     </a>

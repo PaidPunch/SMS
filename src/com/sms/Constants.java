@@ -42,6 +42,8 @@ public class Constants
     public static String CODES_DOMAIN = "Codes";
     public static String OFFERS_DOMAIN = "Offers";
     public static String COOPCODES_DOMAIN = "CoopCodes";
+    public static String OFFERSRECORD_DOMAIN = "OffersRecord";
+    public static String REDEEMRECORD_DOMAIN = "RedeemRecord";
 
     // Used in database connection
     public static String JDBC_DRIVER = "com.mysql.jdbc.Driver";
@@ -84,6 +86,8 @@ public class Constants
             CODES_DOMAIN = "Codes";
             OFFERS_DOMAIN = "Offers";
             COOPCODES_DOMAIN = "CoopCodes";
+            OFFERSRECORD_DOMAIN = "OffersRecord";
+            REDEEMRECORD_DOMAIN = "RedeemRecord";
             
             MAILCHIMP_LIST_ID = "e7350c242f";
         }
@@ -101,6 +105,8 @@ public class Constants
             CODES_DOMAIN = "CodesTest";
             OFFERS_DOMAIN = "OffersTest";
             COOPCODES_DOMAIN = "CoopCodesTest";
+            OFFERSRECORD_DOMAIN = "OffersRecordTest";
+            REDEEMRECORD_DOMAIN = "RedeemRecordTest";
             
             MAILCHIMP_LIST_ID = "4ded3248b9";
         }
