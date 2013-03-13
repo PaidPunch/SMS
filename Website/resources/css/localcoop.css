@@ -28,6 +28,9 @@
 #photo-text {
 	padding-top: 100px;
 }
+#photo-text2 {
+	padding-top: 50px;
+}
 
 #h1-white-shadow {
   font-size: 40px;
@@ -36,6 +39,14 @@
   text-shadow: 0 0 2px #333, 0 0 1.1em #888;
   padding-bottom: 10px;
 }
+#h2-black-shadow {
+  font-size: 30px;
+  font-weight: 600;
+  color: #000;
+  text-shadow: 0 0 2px #FFF, 0 0 1.1em #FFF;
+  padding-bottom: 10px;
+}
+
 
 #white-text {
 	color:#FFF;
@@ -49,6 +60,9 @@
 }
 #pad-top-15 {
 	padding-top: 15px;
+}
+#pad-top-150 {
+	padding-top: 150px;
 }
 .navbar .slogan {
   display: block;
@@ -177,3 +191,14 @@
         margin-left:15px;
         margin-top:-15px;
     }
+/*** Home ***/
+#white-bg {
+	background-color:white;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+}
+
+#white-color {
+	color:white;
+	text-shadow: 0 0 19px #000000, 0 0 1.1em #000000;
+}
