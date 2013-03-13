@@ -74,6 +74,26 @@
   color: #666;
   text-shadow: 0 1px 0 #ffffff;
 }
+.slogan-right {
+  display: block;
+  float: right;
+  padding: 30px 30px 10px;
+  margin-left: -20px;
+  font-size: 19px;
+  font-weight: 200;
+  color: #666;
+  text-shadow: 0 1px 0 #ffffff;
+}
+.right-nav {
+  display: block;
+  float: right;
+  padding: 10px;
+  margin-left: -20px;
+  font-size: 15px;
+  font-weight: 200;
+  color: #666;
+  text-shadow: 0 1px 0 #ffffff;
+}
 #center {
 	text-align:center;
 }
