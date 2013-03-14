@@ -9,7 +9,10 @@ public class BusinessBranch
 {
     private String currentClassName;
     
-    private String address_line1;
+    private String branchId;
+    private String businessId;
+    private String bizCode;
+    private String address;
     private String city;
     private String state;
     private String zipcode;
@@ -17,10 +20,26 @@ public class BusinessBranch
     private String longitude;
     private String contactno;
     private Integer region;
+    private String group;
     
     public BusinessBranch() 
     {
         currentClassName = BusinessBranch.class.getSimpleName();
+    }
+    
+    public String getBranchId()
+    {
+        return branchId;
+    }
+
+    public String getBusinessId()
+    {
+        return businessId;
+    }
+    
+    public String getBizCode()
+    {
+        return bizCode;
     }
     
     public String getContactNo()
@@ -30,7 +49,7 @@ public class BusinessBranch
     
     public String getAddressLine()
     {
-        return address_line1;
+        return address;
     }
     
     public String getCity()
@@ -63,14 +82,34 @@ public class BusinessBranch
         return region;
     }
     
+    public String getGroup()
+    {
+        return group;
+    }
+    
+    public void setBranchId(String branchId)
+    {
+        this.branchId = branchId;
+    }
+    
+    public void setBusinessId(String businessId)
+    {
+        this.businessId = businessId;
+    }
+    
+    public void setBizCode(String bizCode)
+    {
+        this.bizCode = bizCode;
+    }
+    
     public void setContactNo(String contactno)
     {
         this.contactno = contactno;
     }
     
-    public void setAddressLine(String address_line1)
+    public void setAddressLine(String address)
     {
-        this.address_line1 = address_line1;
+        this.address = address;
     }
     
     public void setCity(String city)
@@ -103,6 +142,11 @@ public class BusinessBranch
         this.region = region;
     }
     
+    public void setGroup(String group)
+    {
+        this.group = group;
+    }
+    
     public boolean isInRegionList(ArrayList<Integer> regions)
     {
         boolean found = false;
@@ -124,7 +168,7 @@ public class BusinessBranch
         try
         {
             jsonOutput.put("contactno", contactno);
-            jsonOutput.put("address_line1", address_line1); 
+            jsonOutput.put("address", address); 
             jsonOutput.put("city", city);   
             jsonOutput.put("state", state); 
             jsonOutput.put("zipcode", zipcode); 

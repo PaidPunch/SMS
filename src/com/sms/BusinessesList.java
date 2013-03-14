@@ -8,8 +8,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONArray;
-
 import com.amazonaws.services.simpledb.model.Attribute;
 import com.amazonaws.services.simpledb.model.Item;
 
@@ -31,7 +29,7 @@ public class BusinessesList extends DataObjectBase
         refreshInterval = 15 * 60 * 1000L;
     }
     
-    private void getListOfBusinesses()
+    private void getListOfBusinessesFromDatabase()
     {
         String queryString = "SELECT b.business_userid,b.business_code,b.business_name,b.buss_desc,a.contactno,b.logo_path,b.busi_enabled,b.url_path," + 
                 "a.address_id,a.address_line1,a.city,a.state,a.zipcode,a.longitude,a.latitude,a.region," +
@@ -73,56 +71,37 @@ public class BusinessesList extends DataObjectBase
                              hashBusinesses.put(bizCode, currentBusiness);
                          }
                          
-                         String address_id = results.getString("address_id");
-                         BusinessBranch currentBranch = null;
-                         if (currentBusiness.getBranches() != null)
-                         {
-                             currentBusiness.getBranches().get(address_id);    
-                         }
-                         if (currentBranch == null)
-                         {
-                             // Create a new branch
-                             currentBranch = new BusinessBranch();
-                             
-                             // Populate branch information
-                             currentBranch.setAddressLine(results.getString("address_line1"));
-                             currentBranch.setCity(results.getString("city"));
-                             currentBranch.setState(results.getString("state"));
-                             currentBranch.setZipcode(results.getString("zipcode"));
-                             currentBranch.setLongitude(results.getString("longitude"));
-                             currentBranch.setLatitude(results.getString("latitude"));
-                             currentBranch.setContactNo(results.getString("contactno"));
-                             currentBranch.setRegion(Integer.parseInt(results.getString("region")));
-                             
-                             // Add current branch to the Business 
-                             currentBusiness.insertBranch(address_id, currentBranch);    
-                         }
+                         // Create a new branch
+                         BusinessBranch currentBranch = new BusinessBranch();
                          
-                         String punchcard_id = results.getString("punch_card_id");
-                         Punchcard currentPunchcard = null;
-                         if (currentBusiness.getPunchcards() != null)
-                         {
-                             currentBusiness.getPunchcards().get(punchcard_id);
-                         }
-                         if (currentPunchcard == null)
-                         {
-                             // Create a new offer
-                             currentPunchcard = new Punchcard();
-                             
-                             // Populate offer information
-                             currentPunchcard.setPunchcardId(punchcard_id);
-                             currentPunchcard.setNumPunches(results.getString("no_of_punches_per_card"));
-                             currentPunchcard.setValuePerPunch(results.getString("value_of_each_punch"));
-                             currentPunchcard.setCost(results.getString("selling_price_of_punch_card"));
-                             currentPunchcard.setRestrictionTime(results.getString("restriction_time"));
-                             currentPunchcard.setCategory(results.getString("punchcard_category"));
-                             currentPunchcard.setExpiryDays(results.getString("expirydays"));
-                             currentPunchcard.setMinValue(results.getString("minimumvalue"));
-                             currentPunchcard.setCouponCode(results.getString("punchcard_code"));
-                             
-                             // Add current branch to the Business 
-                             currentBusiness.insertPunchcard(punchcard_id, currentPunchcard);
-                         }
+                         // Populate branch information
+                         currentBranch.setAddressLine(results.getString("address_line1"));
+                         currentBranch.setCity(results.getString("city"));
+                         currentBranch.setState(results.getString("state"));
+                         currentBranch.setZipcode(results.getString("zipcode"));
+                         currentBranch.setLongitude(results.getString("longitude"));
+                         currentBranch.setLatitude(results.getString("latitude"));
+                         currentBranch.setContactNo(results.getString("contactno"));
+                         currentBranch.setRegion(Integer.parseInt(results.getString("region")));
+                         
+                         // Add current branch to the Business 
+                         currentBusiness.insertBranch(currentBranch);  
+                         
+                         Punchcard currentPunchcard = new Punchcard();
+                         
+                         // Populate offer information
+                         currentPunchcard.setPunchcardId(results.getString("punch_card_id"));
+                         currentPunchcard.setNumPunches(results.getString("no_of_punches_per_card"));
+                         currentPunchcard.setValuePerPunch(results.getString("value_of_each_punch"));
+                         currentPunchcard.setCost(results.getString("selling_price_of_punch_card"));
+                         currentPunchcard.setRestrictionTime(results.getString("restriction_time"));
+                         currentPunchcard.setCategory(results.getString("punchcard_category"));
+                         currentPunchcard.setExpiryDays(results.getString("expirydays"));
+                         currentPunchcard.setMinValue(results.getString("minimumvalue"));
+                         currentPunchcard.setCouponCode(results.getString("punchcard_code"));
+                         
+                         // Add current branch to the Business 
+                         currentBusiness.insertPunchcard(currentPunchcard);
                      } 
                  }
             });
@@ -141,7 +120,7 @@ public class BusinessesList extends DataObjectBase
             {
                 currentBusinesses = new HashMap<String,Business>();
                 
-                getListOfBusinesses();
+                getListOfBusinessesFromDatabase();
                 
                 lastRefreshTime = new Date();
             }
@@ -154,78 +133,7 @@ public class BusinessesList extends DataObjectBase
         }
     }
     
-    public JSONArray getAllBusinesses()
-    {
-        // Refresh the data if necessary
-        refreshBusinessesFromDatabaseIfNecessary();
-        JSONArray jsonBusinesses = new JSONArray();
-        for (Map.Entry<String, Business> entry : currentBusinesses.entrySet())
-        {
-            jsonBusinesses.put(entry.getValue().getJSONOfBusiness());
-        }
-        return jsonBusinesses;
-    }
-    
-    public JSONArray getAllEnabledBusinesses()
-    {
-        // Refresh the data if necessary
-        refreshBusinessesFromDatabaseIfNecessary();
-        JSONArray jsonBusinesses = new JSONArray();
-        for (Map.Entry<String, Business> entry : currentBusinesses.entrySet())
-        {
-            Business current = entry.getValue();
-            if (current.getBusiEnabled())
-            {
-                jsonBusinesses.put(current.getJSONOfBusiness());    
-            }
-        }
-        return jsonBusinesses;
-    }
-    
-    /*
-    public JSONObject getSingleBusiness(String business_id, boolean enabledOnly)
-    {
-        // Refresh the data if necessary
-        refreshBusinessesFromDatabaseIfNecessary();
-        JSONObject jsonBusiness = null;
-        Business current = currentBusinesses.get(business_id);
-        if (current != null && (current.getBusiEnabled() || !enabledOnly))
-        {
-            jsonBusiness = current.getJSONOfBusiness();
-        }
-        return jsonBusiness;
-    }
-    
-    public JSONArray getBusinessesCloseBy(double latitude, double longitude)
-    {
-        // Refresh the data if necessary
-        refreshBusinessesFromDatabaseIfNecessary();
-        
-        int region = GeoLocation.coordToRegion(latitude, longitude);
-        ArrayList<Integer> surroundingRegions = GeoLocation.getSurroundingRegions(region);
-        // Add self to region
-        surroundingRegions.add(region);
-        
-        SimpleLogger.getInstance().info(currentClassName, "Regions: " + surroundingRegions.toString());
-        
-        JSONArray jsonBusinesses = new JSONArray();
-        for (Map.Entry<String, Business> entry : currentBusinesses.entrySet())
-        {
-            Business current = entry.getValue();
-            if (current.getBusiEnabled())
-            {
-                JSONObject jsonBusiness = current.getJSONOfBusiness(surroundingRegions);
-                if (jsonBusiness != null)
-                {
-                    jsonBusinesses.put(jsonBusiness);   
-                } 
-            }
-        }
-        return jsonBusinesses;
-    }
-    */
-    
-    public Business getBusinessesCloseBy(String bizCode)
+    public Business getABusinessCloseByV1(String bizCode)
     {
         // Refresh the data if necessary
         refreshBusinessesFromDatabaseIfNecessary();
@@ -236,8 +144,7 @@ public class BusinessesList extends DataObjectBase
         if (current != null)
         {
             // TODO: For now, assume a single business location
-            Map.Entry<String, BusinessBranch> entry = current.getBranches().entrySet().iterator().next();
-            BusinessBranch currentBranch = entry.getValue();
+            BusinessBranch currentBranch = current.getBranches().get(0);
             latitude = Double.parseDouble(currentBranch.getLatitude());
             longitude = Double.parseDouble(currentBranch.getLongitude());
         }
@@ -245,16 +152,10 @@ public class BusinessesList extends DataObjectBase
         {
             String queryString = "select `latitude`, `longitude` from `" + Constants.COOPCODES_DOMAIN + "` where `code` = '" + bizCode + "'";
             SimpleDB sdb = SimpleDB.getInstance();
-            List<Item> items = sdb.selectQuery(queryString);
+            List<Item> items = sdb.retrieveFromSimpleDB(queryString, true);
             
-            if (items.size() >= 1)
-            {
-                if (items.size() > 1)
-                {
-                    // Warn if more than one item found
-                    SimpleLogger.getInstance().warn(currentClassName, "MultipleCoopCodeMatches|code:" + bizCode);
-                }
-                
+            if (items.size() > 0)
+            {                
                 // get the first item
                 Item currentItem = items.get(0);
                 
@@ -290,6 +191,95 @@ public class BusinessesList extends DataObjectBase
         }
     }
     
+    public Business getABusinessCloseByV2(String bizCode)
+    {
+        double latitude = 0;
+        double longitude = 0;
+        String group = null;
+        boolean found = false;
+        
+        Business selectedBusiness = null;
+        Business currentBiz = getBusinessByBizCodeV2(bizCode);
+        // No such biz code found, so check list of custom coop codes
+        if (currentBiz != null)
+        {
+            BusinessBranch branch = currentBiz.getBranches().get(0);
+            latitude = Double.parseDouble(branch.getLatitude());
+            longitude = Double.parseDouble(branch.getLongitude());
+            group = branch.getGroup();
+            found = true;
+        }
+        else
+        {
+            String queryString = "select `latitude`, `longitude`, `group` from `" + Constants.COOPCODES_DOMAIN + "` where `code` = '" + bizCode + "'";
+            SimpleDB sdb = SimpleDB.getInstance();
+            List<Item> items = sdb.retrieveFromSimpleDB(queryString, true);
+            
+            if (items.size() > 0)
+            {                
+                // get the first item
+                Item currentItem = items.get(0);
+                
+                for (Attribute attribute : currentItem.getAttributes()) 
+                {
+                    if (attribute.getName().equals("latitude"))
+                    {
+                        latitude = Double.parseDouble(attribute.getValue());
+                    }
+                    else if (attribute.getName().equals("longitude"))
+                    {
+                        longitude = Double.parseDouble(attribute.getValue());
+                    }
+                    else if (attribute.getName().equals("group"))
+                    {
+                        group = attribute.getValue();
+                    }
+                }
+                
+                found = true;
+            }
+            else 
+            {
+                return null;
+            }
+        }
+        
+        if (found)
+        {
+            SimpleLogger.getInstance().info(currentClassName, "V2FoundBusiness|Latitude:" + latitude + "|Longitude:" + longitude + "|Group:" + group);
+            
+            SimpleDB sdb = SimpleDB.getInstance();
+            String allQuery = "select * from `" + Constants.BUSINESSBRANCH_DOMAIN + 
+                    "` where `group` = '" + group + 
+                    "' and `bizCode` != '" + bizCode + "'";
+            List<Item> queryList = sdb.retrieveFromSimpleDB(allQuery, true);
+            if (queryList.size() > 0)
+            { 
+                ArrayList<Business> businesses = new ArrayList<Business>();
+                for (Item currentItem : queryList)
+                {
+                    BusinessBranch currentBranch = createBusinessBranchObject(currentItem);
+                    if (currentBranch != null)
+                    {
+                        Business newBiz = retrieveSingleBusinessObjectWithBranch(currentBranch);
+                        if (newBiz != null)
+                        {
+                            businesses.add(newBiz);
+                        }
+                    }
+                }
+                
+                if (businesses.size() > 0)
+                {
+                    int businessesSize = businesses.size();
+                    int index = (int)(Math.random() * businessesSize);
+                    selectedBusiness = businesses.get(index);   
+                }
+            }
+        }
+        return selectedBusiness;
+    }
+    
     private ArrayList<Business> getBusinessesCloseBy(String bizCode, double latitude, double longitude)
     {        
         ArrayList<Business> arrayBusinesses = new ArrayList<Business>();
@@ -304,7 +294,218 @@ public class BusinessesList extends DataObjectBase
         return arrayBusinesses;
     }
     
-    public Business getBusinessByBizCode(String bizCode)
+    private BusinessBranch getBranchFromBusinessCode(String bizCode)
+    {
+        BusinessBranch branch = null;
+        
+        // Biz codes are associated with branches, so start there
+        SimpleDB sdb = SimpleDB.getInstance();
+        String allQuery = "SELECT * FROM `" + Constants.BUSINESSBRANCH_DOMAIN + 
+                "` where `bizCode` = '" + bizCode + "'";
+        SimpleLogger.getInstance().info(currentClassName, allQuery);
+        List<Item> queryList = sdb.retrieveFromSimpleDB(allQuery, true);
+        if (queryList.size() > 0)
+        {            
+            Item currentItem = queryList.get(0);
+            branch = createBusinessBranchObject(currentItem);
+        }
+        
+        return branch;
+    }
+    
+    private ArrayList<BusinessBranch> retrieveBusinessBranchesObject(String businessId)
+    {
+        ArrayList<BusinessBranch> branches = null;
+        
+        // Biz codes are associated with branches, so start there
+        SimpleDB sdb = SimpleDB.getInstance();
+        String allQuery = "SELECT * FROM `" + Constants.BUSINESSBRANCH_DOMAIN + 
+                "` where `businessid` = '" + businessId + "'";
+        SimpleLogger.getInstance().info(currentClassName, allQuery);
+        List<Item> queryList = sdb.retrieveFromSimpleDB(allQuery, false);
+        if (queryList != null)
+        {            
+            branches = new ArrayList<BusinessBranch>();
+            for (Item currentItem : queryList)
+            {
+                BusinessBranch branch = createBusinessBranchObject(currentItem);
+                branches.add(branch);
+            }
+        }
+        
+        return branches;
+    }
+    
+    private BusinessBranch createBusinessBranchObject(Item currentItem)
+    {        
+        BusinessBranch currentBranch = new BusinessBranch();
+        currentBranch.setBranchId(currentItem.getName());
+        for (Attribute attribute : currentItem.getAttributes()) 
+        {
+            // Populate business information
+            if (attribute.getName().equals("businessid"))
+            {           
+                currentBranch.setBusinessId(attribute.getValue());    
+            }
+            else if (attribute.getName().equals("address"))
+            {           
+                currentBranch.setAddressLine(attribute.getValue());    
+            }
+            else if (attribute.getName().equals("longitude"))
+            {                
+                currentBranch.setLongitude(attribute.getValue());
+            }
+            else if (attribute.getName().equals("latitude"))
+            {                
+                currentBranch.setLatitude(attribute.getValue());
+            }
+            else if (attribute.getName().equals("contactno"))
+            {                
+                currentBranch.setContactNo(attribute.getValue());
+            }
+            else if (attribute.getName().equals("region"))
+            {                
+                currentBranch.setRegion(Integer.getInteger(attribute.getValue()));
+            }
+            else if (attribute.getName().equals("group"))
+            {                
+                currentBranch.setGroup(attribute.getValue());
+            }
+        }
+        return currentBranch;
+    }
+    
+    private ArrayList<BusinessOffer> retrieveBusinessOffersObject(String businessId)
+    {
+        ArrayList<BusinessOffer> offers = null;
+        
+        // Biz codes are associated with branches, so start there
+        SimpleDB sdb = SimpleDB.getInstance();
+        String allQuery = "SELECT * FROM `" + Constants.BUSINESSOFFER_DOMAIN + 
+                "` where `businessid` = '" + businessId + "'";
+        SimpleLogger.getInstance().info(currentClassName, allQuery);
+        List<Item> queryList = sdb.retrieveFromSimpleDB(allQuery, false);
+        if (queryList.size() > 0)
+        {            
+            offers = new ArrayList<BusinessOffer>();
+            for (Item currentItem : queryList)
+            {
+                BusinessOffer offer = createBusinessOfferObject(currentItem);
+                offers.add(offer);
+            }
+        }
+        
+        return offers;
+    }
+    
+    private BusinessOffer createBusinessOfferObject(Item currentItem)
+    {        
+        BusinessOffer currentOffer = new BusinessOffer();
+        currentOffer.setOfferId(currentItem.getName());
+        for (Attribute attribute : currentItem.getAttributes()) 
+        {
+            // Populate business information
+            if (attribute.getName().equals("offertext"))
+            {           
+                currentOffer.setOfferText(attribute.getValue());    
+            }
+            else if (attribute.getName().equals("offercode"))
+            {           
+                currentOffer.setOfferText(attribute.getValue());    
+            }
+        }
+        return currentOffer;
+    }
+    
+    private Business retrieveSingleBusinessObjectWithBranch(BusinessBranch branch)
+    {
+        Business currentBiz = null;
+        
+        // Biz codes are associated with branches, so start there
+        SimpleDB sdb = SimpleDB.getInstance();
+        String allQuery = "SELECT * FROM `" + Constants.BUSINESS_DOMAIN + 
+                "` where itemName() = '" + branch.getBusinessId() + "'";
+        SimpleLogger.getInstance().info(currentClassName, allQuery);
+        List<Item> queryList = sdb.retrieveFromSimpleDB(allQuery, true);
+        if (queryList.size() > 0)
+        {            
+            Item currentItem = queryList.get(0);
+            currentBiz = createBusinessObject(currentItem);
+            
+            // set branches for current business
+            currentBiz.insertBranch(branch);
+            
+            // set offers for current business
+            ArrayList<BusinessOffer> offers = retrieveBusinessOffersObject(branch.getBusinessId());
+            currentBiz.setOffers(offers);
+        }
+        
+        return currentBiz;
+    }
+    
+    public Business retrieveSingleBusinessObjectWithBusinessId(String businessId)
+    {
+        Business currentBiz = null;
+        
+        // Biz codes are associated with branches, so start there
+        SimpleDB sdb = SimpleDB.getInstance();
+        String allQuery = "SELECT * FROM `" + Constants.BUSINESS_DOMAIN + 
+                "` where itemName() = '" + businessId + "'";
+        SimpleLogger.getInstance().info(currentClassName, allQuery);
+        List<Item> queryList = sdb.retrieveFromSimpleDB(allQuery, true);
+        if (queryList.size() > 0)
+        {            
+            Item currentItem = queryList.get(0);
+            currentBiz = createBusinessObject(currentItem);
+            
+            // set branches for current business
+            ArrayList<BusinessBranch> branches = retrieveBusinessBranchesObject(businessId);
+            currentBiz.setBranches(branches);
+            
+            // set offers for current business
+            ArrayList<BusinessOffer> offers = retrieveBusinessOffersObject(businessId);
+            currentBiz.setOffers(offers);
+        }
+        
+        return currentBiz;
+    }
+    
+    private Business createBusinessObject(Item currentItem)
+    {
+        Business currentBusiness = new Business();
+        currentBusiness.setBusinessUserId(currentItem.getName());
+        for (Attribute attribute : currentItem.getAttributes()) 
+        {
+            // Populate business information
+            if (attribute.getName().equals("name"))
+            {           
+                currentBusiness.setName(attribute.getValue());    
+            }
+            else if (attribute.getName().equals("desc"))
+            {                
+                currentBusiness.setDesc(attribute.getValue());
+            }
+            else if (attribute.getName().equals("logo_path"))
+            {                
+                currentBusiness.setLogoPath(attribute.getValue());
+            }
+            else if (attribute.getName().equals("enabled"))
+            {                
+                currentBusiness.setBusiEnabled(attribute.getValue());
+            }
+            else if (attribute.getName().equals("url_path"))
+            {                
+                currentBusiness.setUrlPath(attribute.getValue());
+            }
+            else if (attribute.getName().equals("category"))
+            {                
+                currentBusiness.setUrlPath(attribute.getValue());
+            }
+        }
+        return currentBusiness;
+    }
+    
+    public Business getBusinessByBizCodeV1(String bizCode)
     {
         // Refresh the data if necessary
         refreshBusinessesFromDatabaseIfNecessary();
@@ -318,6 +519,18 @@ public class BusinessesList extends DataObjectBase
                 foundBusiness = current;
                 break;
             }
+        }
+        
+        return foundBusiness;
+    }
+    
+    public Business getBusinessByBizCodeV2(String bizCode)
+    {        
+        Business foundBusiness = null;
+        BusinessBranch branch = getBranchFromBusinessCode(bizCode);
+        if (branch != null)
+        {
+            foundBusiness = retrieveSingleBusinessObjectWithBranch(branch);
         }
         
         return foundBusiness;

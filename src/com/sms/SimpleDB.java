@@ -66,7 +66,7 @@ public class SimpleDB
 	    }
 	}
 	
-	public List<Item> selectQuery(String queryString)
+	private List<Item> selectQuery(String queryString)
 	{
 		try
 		{
@@ -94,6 +94,26 @@ public class SimpleDB
 
 		return null;
 	}
+	
+	public List<Item> retrieveFromSimpleDB(String queryString, boolean singleItem)
+    {
+        List<Item> retrievedItems = null;
+        
+        SimpleLogger.getInstance().info(currentClassName, queryString);
+        retrievedItems = selectQuery(queryString);
+        if (retrievedItems != null && retrievedItems.size() == 0)
+        {
+            // Warn that there appear to be multiple active coupons for this business code
+            SimpleLogger.getInstance().warn(currentClassName, "NoItemsRetrieved|Query:" + queryString);
+        }
+        else if (retrievedItems != null && singleItem && retrievedItems.size() > 1)
+        {
+            // Warn that there appear to be multiple active coupons for this business code
+            SimpleLogger.getInstance().warn(currentClassName, "MultipleItemsRetrievedUnexpectedly|Query:" + queryString);
+        }
+        
+        return retrievedItems;
+    }
 	
 	public JSONArray selectQueryAsJSON(String queryString)
 	{

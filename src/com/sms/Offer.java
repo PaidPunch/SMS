@@ -20,7 +20,7 @@ public class Offer extends HttpServlet
 {
     private static final long serialVersionUID = 3637588532737512970L;
     private String currentClassName;
-    private static String baseRedeemUrl = "http://sms.paidpunch.com/redeem?Code=";
+    private static String baseRedeemUrl = "redeem?Code=";
 
     public Offer() 
     {  
@@ -56,15 +56,9 @@ public class Offer extends HttpServlet
                     "` where itemName() = '" + code + 
                     "' and `expiryDatetime` > '" + currentDatetime + "'";
             SimpleLogger.getInstance().info(currentClassName, allQuery);
-            List<Item> queryList = sdb.selectQuery(allQuery);
-            if (queryList.size() > 0)
+            List<Item> queryList = sdb.retrieveFromSimpleDB(allQuery, true);
+            if (queryList != null)
             {
-                if (queryList.size() > 1)
-                {
-                    // Warn that there appear to be multiple active coupons for this business code
-                    SimpleLogger.getInstance().warn(currentClassName, "MultipleActiveOffers|itemName:" + code);
-                }
-                
                 Item currentItem = queryList.get(0);
                 for (Attribute attribute : currentItem.getAttributes()) 
                 {
@@ -112,7 +106,7 @@ public class Offer extends HttpServlet
             if (businessName != null)
             {
                 request.setAttribute("business_name", businessName);
-                request.setAttribute("redeemlink", baseRedeemUrl + codeString);
+                request.setAttribute("redeemlink", Constants.URL_ROOT + baseRedeemUrl + codeString);
                 request.getRequestDispatcher("/offer.jsp").forward(request, response);    
             }
             else

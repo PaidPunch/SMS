@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.ServletConfig;
@@ -45,11 +44,6 @@ public class Redeem extends HttpServlet
        }
     }
     
-    private Business getBusiness(String code)
-    {
-        return BusinessesList.getInstance().getBusinessByBizCode(code);
-    }
-    
     private HashMap<String,String> getOfferInfo(String code)
     {
         HashMap<String,String> current = null;
@@ -58,19 +52,13 @@ public class Redeem extends HttpServlet
             String currentDatetime = Utility.getCurrentDatetimeInUTC();
             
             SimpleDB sdb = SimpleDB.getInstance();
-            String allQuery = "select offerBizCode, expiryDatetime from `" + Constants.OFFERS_DOMAIN + 
+            String allQuery = "select version, offerBizCode, expiryDatetime from `" + Constants.OFFERS_DOMAIN + 
                     "` where itemName() = '" + code + 
                     "' and `expiryDatetime` > '" + currentDatetime + "'";
             SimpleLogger.getInstance().info(currentClassName, allQuery);
-            List<Item> queryList = sdb.selectQuery(allQuery);
-            if (queryList.size() > 0)
-            {
-                if (queryList.size() > 1)
-                {
-                    // Warn that there appear to be multiple active coupons for this business code
-                    SimpleLogger.getInstance().warn(currentClassName, "MultipleActiveOffers|itemName:" + code);
-                }
-                
+            List<Item> queryList = sdb.retrieveFromSimpleDB(allQuery, true);
+            if (queryList != null)
+            {                
                 current = new HashMap<String,String>();
                 Item currentItem = queryList.get(0);
                 for (Attribute attribute : currentItem.getAttributes()) 
@@ -113,41 +101,72 @@ public class Redeem extends HttpServlet
             HashMap<String,String> offerInfo = getOfferInfo(codeString);
             if (offerInfo != null)
             {
-                Business currentBiz = getBusiness(offerInfo.get("offerBizCode"));
+                Business currentBiz = null;
+                
+                if (offerInfo.get("version").equals("1.0"))
+                {
+                    currentBiz = BusinessesList.getInstance().getBusinessByBizCodeV1(offerInfo.get("offerBizCode"));
+                }
+                else if (offerInfo.get("version").equals("2.0"))
+                {
+                    currentBiz = BusinessesList.getInstance().retrieveSingleBusinessObjectWithBusinessId(offerInfo.get("offerBizCode"));
+                }
+                
                 if (currentBiz != null)
                 {
                     // TODO: Assume single branch and offer for now
-                    Map.Entry<String, BusinessBranch> entryBranches = currentBiz.getBranches().entrySet().iterator().next();
-                    BusinessBranch currentBranch = entryBranches.getValue();
-                    Map.Entry<String, Punchcard> entryOffers = currentBiz.getPunchcards().entrySet().iterator().next();
-                    Punchcard currentOffer = entryOffers.getValue();
+                    BusinessBranch currentBranch = currentBiz.getBranches().get(0);
                     
                     request.setAttribute("name", currentBiz.getName());
                     request.setAttribute("desc", currentBiz.getDesc());
                     request.setAttribute("logo", currentBiz.getLogoPath());
-                    String address = currentBranch.getAddressLine() + ", " + currentBranch.getCity() + ", " + 
-                            currentBranch.getState() + " " + currentBranch.getZipcode();
-                    request.setAttribute("address", address);
+                    
                     request.setAttribute("latitude", currentBranch.getLatitude());
                     request.setAttribute("longitude", currentBranch.getLongitude());
                     request.setAttribute("phone", Utility.standardizePhoneNumber(currentBranch.getContactNo()));
-                    request.setAttribute("discount", currentOffer.getValuePerPunch());
-                    request.setAttribute("minvalue", currentOffer.getMinValue());
                     request.setAttribute("expirydate", offerInfo.get("expiryDatetime"));
                     
-                    String codeText = currentOffer.getCouponCode();
-                    if (codeText.length() > 0)
+                    if (offerInfo.get("version").equals("1.0"))
                     {
-                        String couponCodeString = "<h2><b>Code: " + codeText + "</b></h2>";
-                        request.setAttribute("couponcode", couponCodeString);
+                        String address = currentBranch.getAddressLine() + ", " + currentBranch.getCity() + ", " + 
+                                currentBranch.getState() + " " + currentBranch.getZipcode();
+                        request.setAttribute("address", address);
+                        
+                        Punchcard currentOffer = currentBiz.getPunchcards().get(0);
+                        
+                        String offer = "$" + currentOffer.getValuePerPunch() + " off on purchases of $" +
+                                currentOffer.getMinValue() + " or more";
+                        request.setAttribute("offer", offer);
+                        
+                        String codeText = currentOffer.getCouponCode();
+                        if (codeText != null && codeText.length() > 0)
+                        {
+                            String couponCodeString = "<h2><b>Code: " + codeText + "</b></h2>";
+                            request.setAttribute("couponcode", couponCodeString);
+                        }   
                     }
+                    else if (offerInfo.get("version").equals("2.0"))
+                    {
+                        request.setAttribute("address", currentBranch.getAddressLine());
+                        
+                        BusinessOffer currentOffer = currentBiz.getOffers().get(0);
+                        request.setAttribute("offer", currentOffer.getOfferText());
+                        
+                        String codeText = currentOffer.getOfferCode();
+                        if (codeText != null && codeText.length() > 0)
+                        {
+                            String couponCodeString = "<h2><b>Code: " + codeText + "</b></h2>";
+                            request.setAttribute("couponcode", couponCodeString);
+                        } 
+                    }
+                    
                     request.getRequestDispatcher("/redeem.jsp").forward(request, response);    
                 }
                 else
                 {
                     request.setAttribute("error_message", "Redeem code invalid or expired");
                     request.getRequestDispatcher("/error.jsp").forward(request, response);  
-                }   
+                }      
             }
             else
             {

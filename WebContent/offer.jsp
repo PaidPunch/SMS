@@ -32,7 +32,18 @@
     {
       color:#000000;
     }
-  </style>                                 
+  </style>        
+  
+  <script>
+    function clickRedeem() {    	
+    	document.getElementById("egg-image").style.backgroundImage = "url(images/animated-once.gif)";
+    	document.getElementById('egg-text').style.display = 'none';
+    	
+    	window.setTimeout(function() {
+    		location.href = "<%= request.getAttribute("redeemlink") %>";
+    		}, 4000);
+    };                
+  </script>
 </head>
 
 <body>
@@ -40,9 +51,9 @@
     <div>
       <img src="images/animatedlogo-small.gif" alt="LocalCoop">
     </div>
-    <a href="<%= request.getAttribute("redeemlink") %>">
-      <div class="eggImg">
-        <div class="eggText">
+    <a href="#" id="displayRedeem" onClick="clickRedeem();">
+      <div class="eggImg" id="egg-image">
+        <div class="eggText" id="egg-text">
           <h3>Congratulations!</h3>
              <h4>You won a prize from<br>
                  ${business_name}.<br>
@@ -98,6 +109,7 @@
     // after it fires the onload event
     setTimeout(scrollTo, 0, 0, 1);
   };
+  
   (window.onresize = function() 
 	{
     var pageWidth = page.offsetWidth;

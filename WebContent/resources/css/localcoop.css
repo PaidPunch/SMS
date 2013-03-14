@@ -13,6 +13,7 @@ body {
   width:284px; 
   height:368px; 
   background-image:url('../../images/egg.png'); 
+  background-size:100%;
   margin: 0 auto; 
   position:relative;
 }

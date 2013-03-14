@@ -1,17 +1,9 @@
 package com.sms;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class Business 
-{
-    private String currentClassName;
-    
+{    
     private String business_code;
 	private String business_userid;
 	private String name;
@@ -20,14 +12,9 @@ public class Business
 	private boolean busi_enabled;
 	private String url_path;
 	
-	// V2-only arrays
-	private HashMap<String,BusinessBranch> businessBranches;
-	private HashMap<String,Punchcard> punchcards;
-	
-	public Business() 
-    {
-        currentClassName = Business.class.getSimpleName();
-    }
+	private ArrayList<BusinessBranch> businessBranches;
+	private ArrayList<BusinessOffer> businessOffers;
+	private ArrayList<Punchcard> punchcards;
 	
 	public String getBusinessCode()
     {
@@ -64,14 +51,19 @@ public class Business
 		return busi_enabled;
 	}
 	
-	public HashMap<String,BusinessBranch> getBranches()
+	public ArrayList<BusinessBranch> getBranches()
 	{
 	    return businessBranches;
 	}
 	
-	public HashMap<String,Punchcard> getPunchcards()
+	public ArrayList<Punchcard> getPunchcards()
     {
         return punchcards;
+    }
+	
+	public ArrayList<BusinessOffer> getOffers()
+    {
+        return businessOffers;
     }
 	
 	public String getUrlPath()
@@ -114,106 +106,43 @@ public class Business
 	    this.url_path = url_path;
 	}
 	
-	public void insertBranch(String address_id, BusinessBranch branch)
+	public void insertBranch(BusinessBranch branch)
 	{
 	    if (businessBranches == null)
 	    {
-	        businessBranches = new HashMap<String,BusinessBranch>();
+	        businessBranches = new ArrayList<BusinessBranch>();
 	    }
 	    
-	    businessBranches.put(address_id, branch);
+	    businessBranches.add(branch);
 	}
 	
-	public void insertPunchcard(String punchcardid, Punchcard punchcard)
+	public void setBranches(ArrayList<BusinessBranch> branches)
+	{
+	    businessBranches = branches;
+	}
+	
+	public void insertPunchcard(Punchcard punchcard)
     {
         if (punchcards == null)
         {
-            punchcards = new HashMap<String,Punchcard>();
+            punchcards = new ArrayList<Punchcard>();
         }
         
-        punchcards.put(punchcardid, punchcard);
+        punchcards.add(punchcard);
     }
 	
-	public JSONObject getJSONOfBusiness()
-	{
-		JSONObject jsonOutput= new JSONObject();
-
-		try
-		{
-	        // adding or set elements in Map by put method key and value pair
-			jsonOutput.put("business_userid", business_userid);
-			jsonOutput.put("name", name);
-			jsonOutput.put("desc", desc);
-			jsonOutput.put("logo_path", logo_path);	
-			
-            jsonOutput.put("url_path", url_path);
-            
-            JSONArray jsonBranches = new JSONArray();
-            for (Map.Entry<String, BusinessBranch> entry : businessBranches.entrySet())
-            {
-                jsonBranches.put(entry.getValue().getJSONOfBranch());  
-            }
-            jsonOutput.put("branches", jsonBranches);
-            
-            JSONArray jsonPunchcards = new JSONArray();
-            for (Map.Entry<String, Punchcard> entry : punchcards.entrySet())
-            {
-                jsonPunchcards.put(entry.getValue().getJSONOfOffer());  
-            }
-            jsonOutput.put("offers", jsonPunchcards);
-		}
-		catch (JSONException ex)
-		{
-		    SimpleLogger.getInstance().error(currentClassName, ex.getMessage());
-		}
-		
-		return jsonOutput;
-	}
-	
-	public JSONObject getJSONOfBusiness(ArrayList<Integer> regions)
+	public void insertOffer(BusinessOffer offer)
     {
-        JSONObject jsonOutput= null;
-
-        try
-        {            
-            boolean atLeastOneBranch = false;
-            JSONArray jsonBranches = new JSONArray();
-            for (Map.Entry<String, BusinessBranch> entry : businessBranches.entrySet())
-            {
-                if (entry.getValue().isInRegionList(regions))
-                {
-                    jsonBranches.put(entry.getValue().getJSONOfBranch());  
-                    atLeastOneBranch = true;
-                }
-            }
-            
-            // At least a single branch in this business is in the region we care about
-            if (atLeastOneBranch)
-            {
-                jsonOutput= new JSONObject();
-                
-                // adding or set elements in Map by put method key and value pair
-                jsonOutput.put("business_userid", business_userid);
-                jsonOutput.put("name", name);
-                jsonOutput.put("desc", desc);
-                jsonOutput.put("logo_path", logo_path); 
-                jsonOutput.put("url_path", url_path);
-                
-                jsonOutput.put("branches", jsonBranches);
-                
-                JSONArray jsonPunchcards = new JSONArray();
-                for (Map.Entry<String, Punchcard> entry : punchcards.entrySet())
-                {
-                    jsonPunchcards.put(entry.getValue().getJSONOfOffer());  
-                }
-                jsonOutput.put("offers", jsonPunchcards);    
-            }
-        }
-        catch (JSONException ex)
+        if (businessOffers == null)
         {
-            SimpleLogger.getInstance().error(currentClassName, ex.getMessage());
+            businessOffers = new ArrayList<BusinessOffer>();
         }
         
-        return jsonOutput;
+        businessOffers.add(offer);
+    }
+	
+	public void setOffers(ArrayList<BusinessOffer> offers)
+    {
+        this.businessOffers = offers;
     }
 }

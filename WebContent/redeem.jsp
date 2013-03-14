@@ -35,9 +35,10 @@
       <img src="images/animatedlogo-small.gif" alt="LocalCoop">
     </div>
     <div>
-      <h2><b>$ ${discount} off on purchases of $ ${minvalue} or more</b></h2>
+      <h2><b>${offer}</b></h2>
       ${couponcode}
       <h4><b>Show Phone To Cashier To Redeem Offer</b></h4>
+      <p>Offer not valid in combination with other discounts and/or offers</p>
       <h4><b>Offer expires in:</b></h4>
       
       <h3>
