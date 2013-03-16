@@ -9,6 +9,27 @@ body {
   padding: 0 !important;
 }
 
+.businessInput {
+}
+
+.businessInput label {
+    display: inline-block;
+    float: left;
+    clear: left;
+    width: 250px;
+    text-align: right;
+    padding-right: 2em;
+}
+
+.businessInput input {
+  display: inline-block;
+  float: left;
+}
+
+.businessSubmit {
+  text-align: center;
+}
+
 .eggImg  { 
   width:284px; 
   height:368px; 

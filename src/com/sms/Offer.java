@@ -79,7 +79,7 @@ public class Offer extends HttpServlet
     
     private void recordOfferView(String offerId)
     {
-     // Get UUID for naming new suggestion
+        // Get UUID for naming new suggestion
         UUID itemName = UUID.randomUUID();
         
         String currentDatetime = Utility.getCurrentDatetimeInUTC();

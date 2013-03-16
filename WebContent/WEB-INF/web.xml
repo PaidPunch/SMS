@@ -14,9 +14,13 @@
       <servlet-name>Offer</servlet-name>
       <servlet-class>com.sms.Offer</servlet-class>
   </servlet>
-    <servlet>
+  <servlet>
       <servlet-name>Redeem</servlet-name>
       <servlet-class>com.sms.Redeem</servlet-class>
+  </servlet>
+  <servlet>
+      <servlet-name>Businesses</servlet-name>
+      <servlet-class>com.sms.Businesses</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>Processor</servlet-name>
@@ -29,5 +33,9 @@
   <servlet-mapping>
     <servlet-name>Redeem</servlet-name>
     <url-pattern>/redeem</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>Businesses</servlet-name>
+    <url-pattern>/businesses</url-pattern>
   </servlet-mapping>
 </web-app>
