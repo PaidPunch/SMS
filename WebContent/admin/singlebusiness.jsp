@@ -41,6 +41,7 @@
           <label class="control-label" for="business_category">Category</label>  
           <div class="controls">  
             <input type="text" class="input-xlarge" id="business_category">  
+            <span class="help-inline">Only one for now, e.g. Korean, Barbeque, etc</span>  
           </div>  
         </div>
         
@@ -80,13 +81,15 @@
           <label class="control-label" for="business_group">Group</label>  
           <div class="controls">  
             <input type="text" class="input-large" id="business_group">  
+            <span class="help-inline">e.g. REDMOND or GREENWOOD</span>  
           </div>  
         </div>
         
         <div class="control-group">  
-          <label class="control-label" for="business_code">Code</label>  
+          <label class="control-label" for="business_code">Business Code</label>  
           <div class="controls">  
             <input type="text" class="input-large" id="business_code">  
+            <span class="help-inline">e.g. KALBI or NEST</span>  
           </div>  
         </div>
       </div>
