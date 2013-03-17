@@ -10,6 +10,7 @@ $(document).ready(function() {
         var businessGroup = $('#business_group').val();
         var businessCode = $('#business_code').val();
         var businessOffer = $('#business_offer').val();
+        var couponCode = $('#business_coupon_code').val();
         var enabled = $('#business_enabled').val();
         if (!isValidName(businessName)) {
             alert("Please enter your business name");
@@ -28,6 +29,7 @@ $(document).ready(function() {
                     "group" : businessGroup,
                     "code" : businessCode,
                     "offer" : businessOffer,
+                    "couponcode" : couponCode,
                     "enabled" : enabled
                 },
                 success : function(msg) {

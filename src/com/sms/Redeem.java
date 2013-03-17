@@ -119,7 +119,12 @@ public class Redeem extends HttpServlet
                     
                     request.setAttribute("name", currentBiz.getName());
                     request.setAttribute("desc", currentBiz.getDesc());
-                    request.setAttribute("logo", currentBiz.getLogoPath());
+                    String logo_path = currentBiz.getLogoPath();
+                    if (logo_path != null && logo_path.length() > 0)
+                    {
+                        String imgElement = "<img src=\"" + logo_path + "\" alt=\"" + currentBiz.getName() + "\">";
+                        request.setAttribute("logo", imgElement);    
+                    }
                     
                     request.setAttribute("latitude", currentBranch.getLatitude());
                     request.setAttribute("longitude", currentBranch.getLongitude());

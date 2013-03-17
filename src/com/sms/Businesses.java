@@ -182,9 +182,11 @@ public class Businesses extends HttpServlet
         UUID offerId = UUID.randomUUID();
         
         String offer = request.getParameter("offer");
+        String couponcode  = request.getParameter("couponcode");
         
         List<ReplaceableAttribute> listAttributes = new ArrayList<ReplaceableAttribute>();
         listAttributes.add(new ReplaceableAttribute("offertext", offer, true));
+        listAttributes.add(new ReplaceableAttribute("couponcode", couponcode, true));
         listAttributes.add(new ReplaceableAttribute("businessid", businessId.toString(), true));
         
         SimpleDB sdb = SimpleDB.getInstance();

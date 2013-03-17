@@ -95,7 +95,14 @@
         <div class="control-group">  
           <label class="control-label" for="business_offer">Offer</label>  
           <div class="controls">  
-            <input type="text" class="input-large" id="business_offer">  
+            <input type="text" class="input-xxlarge" id="business_offer">  
+          </div>  
+        </div>
+        
+        <div class="control-group">  
+          <label class="control-label" for="business_coupon_code">Coupon Code</label>  
+          <div class="controls">  
+            <input type="text" class="input-large" id="business_coupon_code">  
           </div>  
         </div>
       </div>

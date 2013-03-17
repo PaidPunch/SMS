@@ -54,7 +54,7 @@
       </script>
       <script language="JavaScript" src="resources/js/countdown.js"></script>
       </h3>
-      <img src="<%= request.getAttribute("logo") %>" alt="<%= request.getAttribute("name") %>">
+      ${logo}
       <h4>${name}</h4>
       <h4>${desc}</h4>
       <p><a href="https://maps.google.com/?q=<%= request.getAttribute("address") %>">${address}</a></p>
