@@ -1,4 +1,4 @@
-package com.sms;
+package com.server;
 
 import java.util.ArrayList;
 

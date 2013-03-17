@@ -1,4 +1,4 @@
-package com.sms;
+package com.server;
 
 import java.io.IOException;
 import java.util.List;
@@ -29,7 +29,7 @@ public class SimpleDB
 		try
 		{
 			sdb = new AmazonSimpleDBClient(new PropertiesCredentials(
-					this.getClass().getClassLoader().getResourceAsStream("com/sms/AwsCredentials.properties")));
+					this.getClass().getClassLoader().getResourceAsStream("com/server/AwsCredentials.properties")));
 			sdb.setEndpoint("sdb.us-west-2.amazonaws.com");
 			currentClassName = SimpleDB.class.getSimpleName();
 		}

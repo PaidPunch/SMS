@@ -1,4 +1,6 @@
-package com.sms;
+package com.model;
+
+import com.server.*;
 
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -1,4 +1,4 @@
-package com.sms;
+package com.model;
 
 public class BusinessOffer 
 {    

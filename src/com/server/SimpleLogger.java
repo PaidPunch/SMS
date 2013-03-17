@@ -1,4 +1,4 @@
-package com.sms;
+package com.server;
 
 import org.apache.log4j.*;
 

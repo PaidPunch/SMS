@@ -1,4 +1,7 @@
-package com.sms;
+package com.model;
+
+import com.server.*;
+import com.server.DatabaseAccess.ResultSetHandler;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,9 +13,6 @@ import java.util.Map;
 
 import com.amazonaws.services.simpledb.model.Attribute;
 import com.amazonaws.services.simpledb.model.Item;
-
-import com.sms.DatabaseAccess;
-import com.sms.DatabaseAccess.ResultSetHandler;
 
 public class BusinessesList extends DataObjectBase 
 {

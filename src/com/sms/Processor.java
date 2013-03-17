@@ -1,5 +1,8 @@
 package com.sms;
 
+import com.model.*;
+import com.server.*;
+
 import com.amazonaws.services.simpledb.model.Attribute;
 import com.amazonaws.services.simpledb.model.Item;
 import com.amazonaws.services.simpledb.model.ReplaceableAttribute;

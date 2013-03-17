@@ -1,4 +1,6 @@
-package com.sms;
+package com.model;
+
+import com.server.*;
 
 import java.util.ArrayList;
 
