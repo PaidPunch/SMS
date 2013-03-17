@@ -17,7 +17,7 @@
 
 <body>
   <div style="text-align:center;">
-      <img src="images/localcoop-logo-small.png" alt="LocalCoop">
+      <img src="../images/localcoop-logo-small.png" alt="LocalCoop">
   </div>
   
   <form class="form-horizontal">  

@@ -18,7 +18,7 @@ $(document).ready(function() {
         if (isValidName(businessName)) {
             $.ajax({
                 type : "post",
-                url : "businesses",
+                url : "../businesses",
                 data : {
                     "name" : businessName,
                     "desc" : businessDesc,
