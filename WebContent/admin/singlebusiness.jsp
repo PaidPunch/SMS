@@ -118,6 +118,7 @@
   
   <!-- Javascript - Placed at the end of the document so the pages load faster -->
   <%@include file="script.html"%>
+  <script src="../resources/js/localcoop.js"></script>
 </body>
 
 </html>

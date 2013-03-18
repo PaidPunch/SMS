@@ -11,6 +11,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
+
 import com.amazonaws.services.simpledb.model.Attribute;
 import com.amazonaws.services.simpledb.model.Item;
 
@@ -131,6 +133,41 @@ public class BusinessesList extends DataObjectBase
                 currentBusinesses = null;
             }
         }
+    }
+    
+    public ArrayList<Business> getAllBusinessesFromSimpleDB()
+    {
+        ArrayList<Business> businesses = null;
+        
+        SimpleDB sdb = SimpleDB.getInstance();
+        String allQuery = "SELECT * FROM `" + Constants.BUSINESS_DOMAIN + "`";
+        SimpleLogger.getInstance().info(currentClassName, allQuery);
+        List<Item> queryList = sdb.retrieveFromSimpleDB(allQuery, true);
+        if (queryList != null && queryList.size() > 0)
+        {            
+            businesses = new ArrayList<Business>();
+            for (Item currentItem : queryList)
+            {
+                Business currentBiz = createBusinessObject(currentItem);
+                businesses.add(currentBiz);
+            }
+        }
+        else
+        {
+            SimpleLogger.getInstance().error(currentClassName, "QueryListBlankInGetAllBusinessesFromSimpleDB");
+        }
+        return businesses;
+    }
+    
+    public JSONArray getJSONArrayOfBusinesses(ArrayList<Business> businesses)
+    {                
+        JSONArray mapArray = new JSONArray();
+        for (Business current : businesses)
+        {
+            mapArray.put(current.getMapOfBusiness());
+        }
+        
+        return mapArray;
     }
     
     public Business getABusinessCloseByV1(String bizCode)

@@ -1,6 +1,7 @@
 package com.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Business 
 {    
@@ -144,5 +145,18 @@ public class Business
 	public void setOffers(ArrayList<BusinessOffer> offers)
     {
         this.businessOffers = offers;
+    }
+	
+	// TODO: Incomplete. Need to fill out other fields
+	public HashMap<String, Object> getMapOfBusiness()
+    {
+        HashMap<String,Object> internalMap= new HashMap<String, Object>();
+
+        // adding or set elements in Map by put method key and value pair
+        internalMap.put("businessid", business_userid);
+        internalMap.put("name", name);
+        internalMap.put("desc", desc);
+        
+        return internalMap;
     }
 }

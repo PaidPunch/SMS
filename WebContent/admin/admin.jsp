@@ -14,7 +14,7 @@
     <%@include file="style.html"%> 
 </head>
 
-<body>
+<body onload="getBusinessTable()">
 
   <div style="text-align:center;">
       <img src="../images/localcoop-logo-small.png" alt="LocalCoop">
@@ -33,31 +33,7 @@
   </div>  <!-- content -->
 
   <!-- Javascript - Placed at the end of the document so the pages load faster -->
-  <script language="JavaScript">
-    //Get array of classes without jQuery
-    var array = new Array();
-    array[0] = "Saab";
-    array[1] = "Volvo";
-    array[2] = "BMW";
-  
-    var arrayLength = array.length;
-    var theTable = document.createElement('table');
-    var att=document.createAttribute("class");
-    att.value="table table-striped";
-    theTable.setAttributeNode(att);
-    
-    // Note, don't forget the var keyword!
-    for (var i = 0, tr, td; i < arrayLength; i++) {
-        tr = document.createElement('tr');
-        td = document.createElement('td');
-        td.appendChild(document.createTextNode(array[i]));
-        tr.appendChild(td);
-        theTable.appendChild(tr);
-    }
-  
-    document.getElementById('businesslist').appendChild(theTable);
-  
-  </script>
   <%@include file="script.html"%>
+  <script src="../resources/js/admin.js"></script>
 </body>
 </html>

@@ -1,5 +1,6 @@
 package com.sms;
 
+import com.model.*;
 import com.server.*;
 
 import java.io.*;
@@ -194,6 +195,14 @@ public class Businesses extends HttpServlet
         SimpleDB sdb = SimpleDB.getInstance();
         sdb.updateItem(Constants.BUSINESSOFFER_DOMAIN, offerId.toString(), listAttributes);
     }
+    
+    @Override  
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
+    {          
+        ArrayList<Business>  businesses = BusinessesList.getInstance().getAllBusinessesFromSimpleDB();
+        JSONArray businessesArray = BusinessesList.getInstance().getJSONArrayOfBusinesses(businesses);
+        Utility.jsonResponse(request, response, businessesArray);
+    } 
     
     @Override  
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 

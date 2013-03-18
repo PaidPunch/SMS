@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -16,6 +17,12 @@ import java.util.TimeZone;
 import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public final class Utility 
 {
@@ -30,6 +37,47 @@ public final class Utility
             sb.append(ALPHA_NUM.charAt(ndx));
         }
         return sb.toString();
+    }
+    
+
+    public static void jsonResponse(HttpServletRequest request, HttpServletResponse response, JSONObject responseMap)
+            throws IOException 
+    {
+        try 
+        {
+            response.setContentType("application/json");
+            PrintWriter out = response.getWriter();
+            
+            String res = responseMap.toString();
+            
+            out.print(res);
+            SimpleLogger.getInstance().info(Utility.class.getSimpleName(), res);
+        } 
+        catch (Exception e) 
+        {
+            SimpleLogger.getInstance().error(Utility.class.getSimpleName(), e.getMessage());
+        }
+
+    }
+    
+    public static void jsonResponse(HttpServletRequest request, HttpServletResponse response, JSONArray responseArray)
+            throws IOException 
+    {
+        try 
+        {
+            response.setContentType("application/json");
+            PrintWriter out = response.getWriter();
+            
+            String res = responseArray.toString();
+            
+            out.print(res);
+            SimpleLogger.getInstance().info(Utility.class.getSimpleName(), res);
+        } 
+        catch (Exception e) 
+        {
+            SimpleLogger.getInstance().error(Utility.class.getSimpleName(), e.getMessage());
+        }
+
     }
     
     public static int compareFloats(double f1, double f2, float delta)
