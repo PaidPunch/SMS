@@ -57,6 +57,12 @@ public class Businesses extends HttpServlet
         
         String currentDatetime = Utility.getCurrentDatetimeInUTC();
         
+        // Add a http:// in front of url if one isn't there already
+        if (!url.contains("http://") && !url.contains("https://"))
+        {
+            url = "http://" + url;
+        }
+        
         List<ReplaceableAttribute> listAttributes = new ArrayList<ReplaceableAttribute>();
         listAttributes.add(new ReplaceableAttribute("name", name, true));
         listAttributes.add(new ReplaceableAttribute("desc", desc, true));
@@ -166,9 +172,11 @@ public class Businesses extends HttpServlet
         String geocodeAddressString = address.replace(" ", "+");
         HashMap<String,String> location = getGeocodeLocation(geocodeAddressString);
         
+        String numericOnlyPhone = phone.replaceAll("[^0-9]", "");
+        
         List<ReplaceableAttribute> listAttributes = new ArrayList<ReplaceableAttribute>();
         listAttributes.add(new ReplaceableAttribute("address", address, true));
-        listAttributes.add(new ReplaceableAttribute("contactno", phone, true));
+        listAttributes.add(new ReplaceableAttribute("contactno", numericOnlyPhone, true));
         listAttributes.add(new ReplaceableAttribute("group", group.toUpperCase(), true));
         listAttributes.add(new ReplaceableAttribute("bizCode", code.toUpperCase(), true));
         listAttributes.add(new ReplaceableAttribute("businessid", businessId.toString(), true));

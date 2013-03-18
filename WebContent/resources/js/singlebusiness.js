@@ -12,10 +12,37 @@ $(document).ready(function() {
         var businessOffer = $('#business_offer').val();
         var couponCode = $('#business_coupon_code').val();
         var enabled = $('#business_enabled').val();
-        if (!isValidName(businessName)) {
+        
+        if (!isValidString(businessName)) 
+        {
             alert("Please enter your business name");
         }
-        if (isValidName(businessName)) {
+        else if (!isValidString(businessDesc)) 
+        {
+            alert("Please enter your business description");
+        }
+        else if (!isValidString(businessCategory)) 
+        {
+            alert("Please enter your business category");
+        }
+        else if (!isValidString(urlPath)) 
+        {
+            alert("Please enter your business website");
+        }
+        else if (!isValidString(businessAddress)) 
+        {
+            alert("Please enter your business address");
+        }
+        else if (!isValidString(businessPhone)) 
+        {
+            alert("Please enter your business phone number");
+        }
+        else if (!isValidString(businessCode)) 
+        {
+            alert("Please enter your business code");
+        }
+        else 
+        {
             $.ajax({
                 type : "post",
                 url : "../businesses",
@@ -34,6 +61,7 @@ $(document).ready(function() {
                 },
                 success : function(msg) {
                     alert(msg);
+                    window.open('admin.jsp', '_self', true);
                 }
             });
         }
@@ -41,30 +69,3 @@ $(document).ready(function() {
     });
     
 });
-
-function isValidEmail(email) {
-    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\.+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(email);
-}
-
-function isValidName(string) {
-    if (string) {
-        return true;
-    }
-    return false;
-}
-
-function isValidInvitationCode(invitationCode) {
-    if (invitationCode.length > 4) {
-        return true;
-    }
-    return false;
-}
-
-function isValidPassword(password) {
-    errorMessage = "";
-    if (password.length < 6) {
-        errorMessage = "Password must have at least 6 characters.";
-    }
-    return errorMessage;
-}
