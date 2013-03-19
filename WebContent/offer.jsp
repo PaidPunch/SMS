@@ -12,115 +12,105 @@
   <meta name=apple-mobile-web-app-capable content=yes>
   <meta name=apple-mobile-web-app-status-bar-style content=black>
   <title>LocalCoop</title>
-  <%@include file="style.html"%>
-
-  <!-- Le styles -->
-  <style type="text/css">
-    a:link 
-    {
-      color:#000000;
-    }
-    a:visited 
-    {
-      color:#000000;
-    }  
-    a:hover 
-    {
-      color:#000000;
-    }  
-    a:active 
-    {
-      color:#000000;
-    }
-  </style>        
-  
-  <script>
-    function clickRedeem() {    	
-    	document.getElementById("egg-image").style.backgroundImage = "url(images/animated-once.gif)";
-    	document.getElementById('egg-text').style.display = 'none';
-    	
-    	window.setTimeout(function() {
-    		location.href = "<%= request.getAttribute("redeemlink") %>";
-    		}, 4000);
-    };                
-  </script>
+  <%@include file="style.html"%>     
 </head>
 
 <body>
-  <div style="text-align:center;">
+
+  <script language="JavaScript">
+      var lastFired = new Date().getTime();
+      setInterval(function() 
+      {
+          now = new Date().getTime();
+          if(now - lastFired > 5000) 
+          {
+             // if it's been more than 5 seconds
+             document.location.reload(true);
+          }
+          lastFired = now;
+      }, 500);
+    </script>
+  
+  <div style="text-align:center;" class="container">
     <div>
       <img src="images/animatedlogo-small.gif" alt="LocalCoop">
     </div>
-    <a href="#" id="displayRedeem" onClick="clickRedeem();">
-      <div class="eggImg" id="egg-image">
-        <div class="eggText" id="egg-text">
-          <h3>Congratulations!</h3>
-             <h4>You won a prize from<br>
-                 ${business_name}.<br>
-                 Tap on the egg to claim it!</h4>
+    <div>
+      <div id="egg-section">
+        <a href="#" id="displayRedeem" onClick="clickRedeem();">
+          <div class="eggImg" id="egg-image">
+            <div class="eggText" id="egg-text">
+              <h3>Congratulations!</h3>
+                 <h4>You won a prize from<br>
+                     ${name}.<br>
+                     Tap on the egg to reveal it!</h4>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div id="button-section" style="display:none;">
+        <div class="container-fluid">
+          <div class="row-fluid">
+            <h2><b>Offer expires in: 
+            <script language="JavaScript">
+            TargetDate = "<%= request.getAttribute("expirydate") %>";
+            BackColor = "white";
+            ForeColor = "red";
+            CountActive = true;
+            CountStepper = -1;
+            LeadingZero = true;
+            DisplayFormat = "%%H%%:%%M%%:%%S%%";
+            FinishMessage = "Coupon Expired!";
+            </script>
+            <script language="JavaScript" src="resources/js/countdown.js"></script>
+            </b></h2>
+            
+            <h2 style="color:red;">${offer}</h2>
+          </div>
+          
+          <div class="row-fluid">
+            <div class="span3 offset3">
+              <h3>${name}</h3>
+              ${logo}
+              <h4>${desc}</h4>
+              <h4><a href="https://maps.google.com/?q=<%= request.getAttribute("address") %>">${address}</a></h4>
+              <h4><a href="tel:<%= request.getAttribute("phone") %>">${phone}</a></h4>
+            </div>
+            
+            <div class="span3" style="padding-top:3em;">
+              <p><a class="btn btn-large btn-primary" href="<%= request.getAttribute("redeemlink") %>">Redeem</a></p>
+              <p><br></p>
+              
+              <div class="control-group"> 
+                <label class="control-label" for="select01">Please tell us why you're not interested in this offer</label>   
+                <div class="controls">  
+                  <select id="select01">  
+                    <option>Gimme a better offer!</option>  
+                    <option>I don't use this business</option>  
+                    <option>Business is too far away</option>  
+                    <option>I'm scared of chickens!</option>  
+                  </select>  
+                </div>  
+              </div>  
+              
+              <p><a id="newbiz-btn" class="btn btn-large" href="#">No Thanks</a></p>
+              
+            </div>  
+          </div>
         </div>
       </div>
-    </a>
+    </div>
   </div>
   
-  <!-- Mobile No Broswer Bar -->
+  <!-- Javascript - Placed at the end of the document so the pages load faster -->
+  <%@include file="script.html"%>
+  <script src="resources/js/offer.js"></script>
   <script>
-  var page = document.getElementById('page'),
-  ua = navigator.userAgent,
-  iphone = ~ua.indexOf('iPhone') || ~ua.indexOf('iPod'),
-  ipad = ~ua.indexOf('iPad'),
-  ios = iphone || ipad,
-  // Detect if this is running as a fullscreen app from the homescreen
-  fullscreen = window.navigator.standalone,
-  android = ~ua.indexOf('Android'),
-  lastWidth = 0;
- 
-  if (android) 
-  {
-    // Android's browser adds the scroll position to the innerHeight, just to
-    // make this really fucking difficult. Thus, once we are scrolled, the
-    // page height value needs to be corrected in case the page is loaded
-    // when already scrolled down. The pageYOffset is of no use, since it always
-    // returns 0 while the address bar is displayed.
-    window.onscroll = function() 
+    if (<%= request.getAttribute("displayoffer") %> == 1)
     {
-      page.style.height = window.innerHeight + 'px';
-    }; 
-  }
-  
-  var setupScroll = window.onload = function() {
-    // Start out by adding the height of the location bar to the width, so that
-    // we can scroll past it
-    if (ios) {
-      // iOS reliably returns the innerWindow size for documentElement.clientHeight
-      // but window.innerHeight is sometimes the wrong value after rotating
-      // the orientation
-      var height = document.documentElement.clientHeight;
-      // Only add extra padding to the height on iphone / ipod, since the ipad
-      // browser doesn't scroll off the location bar.
-      if (iphone && !fullscreen) height += 85;
-      page.style.height = height + 'px';
-    } else if (android) {
-      // The stock Android browser has a location bar height of 56 pixels, but
-      // this very likely could be broken in other Android browsers.
-      page.style.height = (window.innerHeight + 56) + 'px';
+       displayOffer();
     }
-    // Scroll after a timeout, since iOS will scroll to the top of the page
-    // after it fires the onload event
-    setTimeout(scrollTo, 0, 0, 1);
-  };
-  
-  (window.onresize = function() 
-	{
-    var pageWidth = page.offsetWidth;
-    // Android doesn't support orientation change, so check for when the width
-    // changes to figure out when the orientation changes
-    if (lastWidth == pageWidth) return;
-    lastWidth = pageWidth;
-    setupScroll();
-  })();
-  </script>
-  
+  </script>  
   <!-- END -->
 </body>
 

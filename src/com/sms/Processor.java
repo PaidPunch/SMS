@@ -149,6 +149,7 @@ public class Processor extends HttpServlet
         listAttributes.add(new ReplaceableAttribute("name", currentBiz.getName(), true));
         listAttributes.add(new ReplaceableAttribute("offerId", offerId, true));
         listAttributes.add(new ReplaceableAttribute("bizCode", bizCode, true));
+        listAttributes.add(new ReplaceableAttribute("displayoffer", "0", true));
         listAttributes.add(new ReplaceableAttribute("createdDatetime", currentDatetime, true));
         listAttributes.add(new ReplaceableAttribute("expiryDatetime", expiryDateTime, true));
         

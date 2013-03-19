@@ -1,24 +1,23 @@
 package com.sms;
 
+import com.model.Business;
 import com.server.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.amazonaws.services.simpledb.model.Attribute;
-import com.amazonaws.services.simpledb.model.Item;
 import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
 
-public class Offer extends HttpServlet 
+public class Offer extends LocalCoopServlet 
 {
     private static final long serialVersionUID = 3637588532737512970L;
     private String currentClassName;
@@ -46,39 +45,6 @@ public class Offer extends HttpServlet
        }
     }
     
-    private String getBusinessName(String code)
-    {
-        String businessName = null;
-        try
-        {
-            String currentDatetime = Utility.getCurrentDatetimeInUTC();
-            
-            SimpleDB sdb = SimpleDB.getInstance();
-            String allQuery = "select name from `" + Constants.OFFERS_DOMAIN + 
-                    "` where itemName() = '" + code + 
-                    "' and `expiryDatetime` > '" + currentDatetime + "'";
-            SimpleLogger.getInstance().info(currentClassName, allQuery);
-            List<Item> queryList = sdb.retrieveFromSimpleDB(allQuery, true);
-            if (queryList != null)
-            {
-                Item currentItem = queryList.get(0);
-                for (Attribute attribute : currentItem.getAttributes()) 
-                {
-                    if (attribute.getName().equals("name"))
-                    {
-                        businessName = attribute.getValue();
-                        break;
-                    }
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            SimpleLogger.getInstance().error(currentClassName, ex.getMessage());
-        }
-        return businessName;
-    }
-    
     private void recordOfferView(String offerId)
     {
         // Get UUID for naming new suggestion
@@ -93,6 +59,12 @@ public class Offer extends HttpServlet
         
         SimpleDB sdb = SimpleDB.getInstance();
         sdb.updateItem(Constants.OFFERSRECORD_DOMAIN, itemName.toString(), listAttributes);
+        
+        // Record item as offered so egg isn't displayed again
+        List<ReplaceableAttribute> offerAttributes = new ArrayList<ReplaceableAttribute>();
+        offerAttributes.add(new ReplaceableAttribute("displayoffer", "1", true));
+        
+        sdb.updateItem(Constants.OFFERS_DOMAIN, offerId, offerAttributes);
     }
       
     @Override  
@@ -100,16 +72,27 @@ public class Offer extends HttpServlet
     {  
         String codeString = request.getParameter("Code");
         if (codeString != null)
-        {
-            // Record that someone viewed this offer
-            recordOfferView(codeString);
-            
-            String businessName = getBusinessName(codeString);
-            if (businessName != null)
+        {            
+            HashMap<String,String> offerInfo = getOfferInfo(codeString);
+            if (offerInfo != null)
             {
-                request.setAttribute("business_name", businessName);
-                request.setAttribute("redeemlink", Constants.URL_ROOT + baseRedeemUrl + codeString);
-                request.getRequestDispatcher("/offer.jsp").forward(request, response);    
+                // Record that someone viewed this offer
+                recordOfferView(codeString);
+                
+                Business currentBiz = getBusiness(offerInfo.get("version"), offerInfo.get("offerBizCode"));
+                
+                if (currentBiz != null)
+                {
+                    setResponseAttributes(request, currentBiz, offerInfo);
+                    request.setAttribute("redeemlink", Constants.URL_ROOT + baseRedeemUrl + codeString);
+                    
+                    request.getRequestDispatcher("/offer.jsp").forward(request, response);    
+                }
+                else
+                {
+                    request.setAttribute("error_message", "Redeem code invalid or expired");
+                    request.getRequestDispatcher("/error.jsp").forward(request, response);  
+                }      
             }
             else
             {
