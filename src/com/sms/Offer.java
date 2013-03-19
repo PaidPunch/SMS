@@ -59,14 +59,30 @@ public class Offer extends LocalCoopServlet
         
         SimpleDB sdb = SimpleDB.getInstance();
         sdb.updateItem(Constants.OFFERSRECORD_DOMAIN, itemName.toString(), listAttributes);
-        
+    }
+      
+    private void recordOfferDisplayed(String offerId)
+    {
+        SimpleDB sdb = SimpleDB.getInstance();
         // Record item as offered so egg isn't displayed again
         List<ReplaceableAttribute> offerAttributes = new ArrayList<ReplaceableAttribute>();
         offerAttributes.add(new ReplaceableAttribute("displayoffer", "1", true));
         
         sdb.updateItem(Constants.OFFERS_DOMAIN, offerId, offerAttributes);
     }
-      
+    
+    @Override  
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
+    {
+        String codeString = request.getParameter("Code");
+        if (codeString != null)
+        {  
+            recordOfferDisplayed(codeString);
+            
+            SimpleLogger.getInstance().info(currentClassName, "IndicateOfferDisplayed|Code:" + codeString);
+        }
+    }
+    
     @Override  
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
     {  
@@ -84,6 +100,7 @@ public class Offer extends LocalCoopServlet
                 if (currentBiz != null)
                 {
                     setResponseAttributes(request, currentBiz, offerInfo);
+                    request.setAttribute("offercode", codeString);
                     request.setAttribute("redeemlink", Constants.URL_ROOT + baseRedeemUrl + codeString);
                     
                     request.getRequestDispatcher("/offer.jsp").forward(request, response);    

@@ -8,7 +8,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
   <!-- No browser bar -->
-  <meta name=viewport content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name=viewport content="width=768">
   <meta name=apple-mobile-web-app-capable content=yes>
   <meta name=apple-mobile-web-app-status-bar-style content=black>
   <title>LocalCoop</title>
@@ -37,7 +37,7 @@
     </div>
     <div>
       <div id="egg-section">
-        <a href="#" id="displayRedeem" onClick="clickRedeem();">
+        <a href="#" id="displayRedeem" onClick="clickRedeem('<%= request.getAttribute("offercode") %>');">
           <div class="eggImg" id="egg-image">
             <div class="eggText" id="egg-text">
               <h3>Congratulations!</h3>
@@ -49,9 +49,11 @@
         </a>
       </div>
       <div id="button-section" style="display:none;">
-        <div class="container-fluid">
-          <div class="row-fluid">
-            <h2><b>Offer expires in: 
+        <h2>${name}</h2>
+        <h2 style="color:red;">${offer}</h2>
+        <h2>
+          <b>
+            Offer expires in: 
             <script language="JavaScript">
             TargetDate = "<%= request.getAttribute("expirydate") %>";
             BackColor = "white";
@@ -63,41 +65,20 @@
             FinishMessage = "Coupon Expired!";
             </script>
             <script language="JavaScript" src="resources/js/countdown.js"></script>
-            </b></h2>
-            
-            <h2 style="color:red;">${offer}</h2>
-          </div>
-          
-          <div class="row-fluid">
-            <div class="span3 offset3">
-              <h3>${name}</h3>
-              ${logo}
-              <h4>${desc}</h4>
-              <h4><a href="https://maps.google.com/?q=<%= request.getAttribute("address") %>">${address}</a></h4>
-              <h4><a href="tel:<%= request.getAttribute("phone") %>">${phone}</a></h4>
-            </div>
-            
-            <div class="span3" style="padding-top:3em;">
-              <p><a class="btn btn-large btn-primary" href="<%= request.getAttribute("redeemlink") %>">Redeem</a></p>
-              <p><br></p>
-              
-              <div class="control-group"> 
-                <label class="control-label" for="select01">Please tell us why you're not interested in this offer</label>   
-                <div class="controls">  
-                  <select id="select01">  
-                    <option>Gimme a better offer!</option>  
-                    <option>I don't use this business</option>  
-                    <option>Business is too far away</option>  
-                    <option>I'm scared of chickens!</option>  
-                  </select>  
-                </div>  
-              </div>  
-              
-              <p><a id="newbiz-btn" class="btn btn-large" href="#">No Thanks</a></p>
-              
-            </div>  
-          </div>
-        </div>
+          </b>
+        </h2>
+        
+        <p>
+          <a id="newbiz-btn" class="btn btn-large" href="#">No Thanks</a>
+          &nbsp;
+          <a class="btn btn-large btn-primary" href="<%= request.getAttribute("redeemlink") %>">Redeem</a>
+        </p>
+        
+        <h4><u>About ${name}</u></h4>
+        ${logo}
+        <h4>${desc}</h4>
+        <h4><a href="https://maps.google.com/?q=<%= request.getAttribute("address") %>">${address}</a></h4>
+        <h4><a href="tel:<%= request.getAttribute("phone") %>">${phone}</a></h4>
       </div>
     </div>
   </div>

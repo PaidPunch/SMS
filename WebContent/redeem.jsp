@@ -8,7 +8,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
   <!-- No browser bar -->
-  <meta name=viewport content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name=viewport content="width=768">
   <meta name=apple-mobile-web-app-capable content=yes>
   <meta name=apple-mobile-web-app-status-bar-style content=black>
   <title>LocalCoop</title>
@@ -35,40 +35,32 @@
       <img src="images/animatedlogo-small.gif" alt="LocalCoop">
     </div>
     
-    <div class="container-fluid">
-      <div class="row-fluid">
-        <h2 style="color:red;">Show Phone To Cashier To Redeem Offer</h2>
-        <h2><b>Offer expires in: 
-        <script language="JavaScript">
-        TargetDate = "<%= request.getAttribute("expirydate") %>";
-        BackColor = "white";
-        ForeColor = "red";
-        CountActive = true;
-        CountStepper = -1;
-        LeadingZero = true;
-        DisplayFormat = "%%H%%:%%M%%:%%S%%";
-        FinishMessage = "Coupon Expired!";
-        </script>
-        <script language="JavaScript" src="resources/js/countdown.js"></script>
-        </b></h2>
-        
-        <h2 style="color:red;">${offer}</h2>
-        ${couponcode}
-        <p>Offer not valid in combination with other discounts and/or offers</p>
-      </div>
+    <div>
+      <h2 style="color:red;">Show Phone To Cashier To Redeem Offer</h2>
+      <h2>${name}</h2>
+      <h2 style="color:red;">${offer}</h2>
+      ${couponcode}
+      <p>Offer not valid in combination with other discounts and/or offers</p>
+      <h2><b>Offer expires in: 
+      <script language="JavaScript">
+      TargetDate = "<%= request.getAttribute("expirydate") %>";
+      BackColor = "white";
+      ForeColor = "red";
+      CountActive = true;
+      CountStepper = -1;
+      LeadingZero = true;
+      DisplayFormat = "%%H%%:%%M%%:%%S%%";
+      FinishMessage = "Coupon Expired!";
+      </script>
+      <script language="JavaScript" src="resources/js/countdown.js"></script>
+      </b></h2>
+      
+      <h4><u>About ${name}</u></h4>
+      ${logo}
+      <h4>${desc}</h4>
+      <h4><a href="https://maps.google.com/?q=<%= request.getAttribute("address") %>">${address}</a></h4>
+      <h4><a href="tel:<%= request.getAttribute("phone") %>">${phone}</a></h4>
           
-      <div class="row-fluid">
-        <div class="span3 offset3">
-          ${logo}
-        </div>
-        
-        <div class="span3" style="padding-top:1em;">
-          <h3>${name}</h3>
-          <h4>${desc}</h4>
-          <h4><a href="https://maps.google.com/?q=<%= request.getAttribute("address") %>">${address}</a></h4>
-          <h4><a href="tel:<%= request.getAttribute("phone") %>">${phone}</a></h4>
-        </div>  
-      </div>
     </div>
   </div>
 
