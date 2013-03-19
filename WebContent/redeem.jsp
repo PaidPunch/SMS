@@ -8,7 +8,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
   <!-- No browser bar -->
-  <meta name=viewport content="width=768">
+  <meta name=viewport content="width=device-width, initial-scale=1.0, maximum-scale=1">
   <meta name=apple-mobile-web-app-capable content=yes>
   <meta name=apple-mobile-web-app-status-bar-style content=black>
   <title>LocalCoop</title>
@@ -36,12 +36,8 @@
     </div>
     
     <div>
-      <h2 style="color:red;">Show Phone To Cashier To Redeem Offer</h2>
-      <h2>${name}</h2>
-      <h2 style="color:red;">${offer}</h2>
-      ${couponcode}
-      <p>Offer not valid in combination with other discounts and/or offers</p>
-      <h2><b>Offer expires in: 
+      <h4 style="color:red;">Show Phone To Cashier To Redeem Offer</h4>
+      <h4><b>Offer expires in: 
       <script language="JavaScript">
       TargetDate = "<%= request.getAttribute("expirydate") %>";
       BackColor = "white";
@@ -53,7 +49,16 @@
       FinishMessage = "Coupon Expired!";
       </script>
       <script language="JavaScript" src="resources/js/countdown.js"></script>
-      </b></h2>
+      </b></h4>
+      <div style="border:1px solid blue;margin:5px;">
+        <h3>
+          ${name}
+          <br>
+          ${offer}
+        </h3>
+        ${couponcode}
+        <p>Offer not valid in combination with other discounts and/or offers</p>
+      </div>
       
       <h4><u>About ${name}</u></h4>
       ${logo}

@@ -18,6 +18,7 @@ public class Constants
     public static String COOPCODES_DOMAIN = "CoopCodes";
     public static String OFFERSRECORD_DOMAIN = "OffersRecord";
     public static String REDEEMRECORD_DOMAIN = "RedeemRecord";
+    public static String FEEDBACK_DOMAIN = "CoopFeedback";
     
     public static String BUSINESS_DOMAIN = "CoopBusiness";
     public static String BUSINESSBRANCH_DOMAIN = "CoopBusinessBranch";
@@ -69,6 +70,7 @@ public class Constants
             COOPCODES_DOMAIN = "CoopCodes";
             OFFERSRECORD_DOMAIN = "OffersRecord";
             REDEEMRECORD_DOMAIN = "RedeemRecord";
+            FEEDBACK_DOMAIN = "CoopFeedback";
             
             BUSINESS_DOMAIN = "CoopBusiness";
             BUSINESSBRANCH_DOMAIN = "CoopBusinessBranch";
@@ -94,6 +96,7 @@ public class Constants
             COOPCODES_DOMAIN = "CoopCodesTest";
             OFFERSRECORD_DOMAIN = "OffersRecordTest";
             REDEEMRECORD_DOMAIN = "RedeemRecordTest";
+            FEEDBACK_DOMAIN = "CoopFeedbackTest";
             
             BUSINESS_DOMAIN = "CoopBusinessTest";
             BUSINESSBRANCH_DOMAIN = "CoopBusinessBranchTest";
