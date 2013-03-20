@@ -22,6 +22,10 @@
       <servlet-name>Businesses</servlet-name>
       <servlet-class>com.sms.Businesses</servlet-class>
   </servlet>
+  <servlet>
+      <servlet-name>Feedback</servlet-name>
+      <servlet-class>com.sms.Feedback</servlet-class>
+  </servlet>
   <servlet-mapping>
     <servlet-name>Processor</servlet-name>
     <url-pattern>/processor</url-pattern>
@@ -37,5 +41,9 @@
   <servlet-mapping>
     <servlet-name>Businesses</servlet-name>
     <url-pattern>/businesses</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>Feedback</servlet-name>
+    <url-pattern>/feedback</url-pattern>
   </servlet-mapping>
 </web-app>

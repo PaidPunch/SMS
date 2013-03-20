@@ -69,7 +69,7 @@
         </h2>
         
         <p>
-          <a id="newbiz-btn" class="btn btn-large" href="#">No Thanks</a>
+          <a class="btn btn-large" href="feedback?Code=<%= request.getAttribute("offercode") %>">No Thanks</a>
           &nbsp;
           <a class="btn btn-large btn-primary" href="<%= request.getAttribute("redeemlink") %>">Redeem</a>
         </p>
