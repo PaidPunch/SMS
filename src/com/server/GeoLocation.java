@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public final class GeoLocation 
 {
-    public static final double geoLocFraction = 0.2;
+    public static final double geoLocFraction = 0.04;
     
     public static int coordToRegion(double latitude, double longitude)
     {
