@@ -49,9 +49,9 @@
         </a>
       </div>
       <div id="button-section" style="display:none;">
-        <h2>${name}</h2>
-        <h2 style="color:red;">${offer}</h2>
-        <h2>
+        <h3>${name}</h3>
+        <h4 style="color:red;">${offer}</h4>
+        <h4>
           <b>
             Offer expires in: 
             <script language="JavaScript">
@@ -66,7 +66,7 @@
             </script>
             <script language="JavaScript" src="resources/js/countdown.js"></script>
           </b>
-        </h2>
+        </h4>
         
         <p>
           <a class="btn btn-large" href="feedback?Code=<%= request.getAttribute("offercode") %>">No Thanks</a>
