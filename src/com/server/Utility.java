@@ -98,9 +98,14 @@ public final class Utility
     
     public static String getCurrentDatetimeInUTC()
     {
+        return Utility.getDatetimeInUTC(new java.util.Date()); 
+    }
+    
+    public static String getDatetimeInUTC(Date current)
+    {
         SimpleDateFormat datetimeFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss aa z");
         datetimeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return datetimeFormat.format(new java.util.Date().getTime()); 
+        return datetimeFormat.format(current.getTime()); 
     }
     
     public static String standardizePhoneNumber(String originalPhone)
@@ -130,6 +135,13 @@ public final class Utility
         value = value * factor;
         long tmp = Math.round(value);
         return (double) tmp / factor;
+    }
+    
+    public static Date getSundayOfCurrentWeek()
+    {
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+        return c.getTime();
     }
     
     public static Date addDays(Date date, int days) {
