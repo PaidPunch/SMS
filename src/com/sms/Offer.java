@@ -5,6 +5,7 @@ import com.server.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -15,6 +16,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.amazonaws.services.simpledb.model.Attribute;
+import com.amazonaws.services.simpledb.model.Item;
 import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
 
 public class Offer extends LocalCoopServlet 
@@ -22,6 +25,13 @@ public class Offer extends LocalCoopServlet
     private static final long serialVersionUID = 3637588532737512970L;
     private String currentClassName;
     private static String baseRedeemUrl = "redeem?Code=";
+    
+    private static final int weeklyPrizeNumberOfTexts = 3;
+    private static final String progressBarTemplate = "<span style=\"float:left;padding:3px; width:25px;height:32px;\"><img src=\"images/egg.png\" alt=\"Golden Egg\"></span>" +
+            "<div class=\"progress progress-striped\" style=\"height:32px;line-height:32px;\"><div class=\"bar bar-success\" style=\"width: <PERCENT>%;\">" +
+            "Text <REMAINING> more times to claim a special prize!" +
+            "</div></div>" ;
+    private static final String prizeButtonTemplate = "<div><a class=\"btn btn-large btn-warning\" href=\"#\">Claim Your Starbucks Giftcard!</a></div>";
 
     public Offer() 
     {  
@@ -71,6 +81,57 @@ public class Offer extends LocalCoopServlet
         sdb.updateItem(Constants.OFFERS_DOMAIN, offerId, offerAttributes);
     }
     
+    private int getNumberOfTextsThisWeek(String phone)
+    {        
+        int numberOfTexts = 0;
+        try
+        {
+            Date sundayOfCurrentWeek = Utility.getSundayOfCurrentWeek();
+            String sundayOfCurrentWeekString = Utility.getDatetimeInUTC(sundayOfCurrentWeek);
+            
+            SimpleDB sdb = SimpleDB.getInstance();
+            String allQuery = "select count(*) from `" + Constants.OFFERS_DOMAIN + 
+                    "` where `phone` = '" + phone + 
+                    "' and `expiryDatetime` >= '" + sundayOfCurrentWeekString + "'";
+            SimpleLogger.getInstance().info(currentClassName, allQuery);
+            List<Item> queryList = sdb.retrieveFromSimpleDB(allQuery, true);
+            if (queryList != null)
+            {                
+                Item currentItem = queryList.get(0);
+                for (Attribute attribute : currentItem.getAttributes()) 
+                {
+                    if (attribute.getName().equals("Count"))
+                    {
+                        numberOfTexts = Integer.parseInt(attribute.getValue());
+                        break;
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            SimpleLogger.getInstance().error(currentClassName, ex.getMessage());
+        }
+        return numberOfTexts;
+    }
+    
+    private String getPrizeString(String phone)
+    {
+        String prizeString = null;
+        int numberOfTextsThisWeek = getNumberOfTextsThisWeek(phone);
+        if (numberOfTextsThisWeek < weeklyPrizeNumberOfTexts)
+        {
+            int percentOfBar = (numberOfTextsThisWeek * 100) / weeklyPrizeNumberOfTexts;
+            prizeString = progressBarTemplate.replace("<PERCENT>", Integer.toString(percentOfBar));
+            prizeString = prizeString.replace("<REMAINING>", Integer.toString(weeklyPrizeNumberOfTexts - numberOfTextsThisWeek));
+        }
+        else
+        {
+            prizeString = prizeButtonTemplate;
+        }
+        return prizeString;
+    }
+    
     @Override  
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
     {
@@ -99,8 +160,11 @@ public class Offer extends LocalCoopServlet
                 
                 if (currentBiz != null)
                 {
+                    String prizeString = getPrizeString(offerInfo.get("phone"));
+                    
                     setResponseAttributes(request, currentBiz, offerInfo);
                     request.setAttribute("offercode", codeString);
+                    request.setAttribute("prize", prizeString);
                     request.setAttribute("redeemlink", Constants.URL_ROOT + baseRedeemUrl + codeString);
                     
                     request.getRequestDispatcher("/offer.jsp").forward(request, response);    

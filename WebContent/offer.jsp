@@ -34,6 +34,9 @@
   <div style="text-align:center;" class="container">
     <div>
       <img src="images/animatedlogo-small.gif" alt="LocalCoop">
+      <div style="margin-top: 10px;">
+        ${prize}
+      </div>
     </div>
     <div>
       <div id="egg-section">
