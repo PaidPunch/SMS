@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.amazonaws.services.simpledb.model.Attribute;
 import com.amazonaws.services.simpledb.model.Item;
 import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
 import com.amazonaws.services.simpledb.model.UpdateCondition;
@@ -42,8 +43,9 @@ public class PrizeList extends DataObjectBase
         return (weeklyPrizeNumberOfTexts - numberOfTextsThisWeek);
     }
     
-    public void createPrizeIfNecessary(int numberOfTextsThisWeek, String phone)
+    public String createPrizeIfNecessary(int numberOfTextsThisWeek, String phone)
     {                 
+        String prizeId = null;
         if (numberOfTextsThisWeek == weeklyPrizeNumberOfTexts)
         {
             // Start by making sure prize doesn't already exist for current week
@@ -54,9 +56,9 @@ public class PrizeList extends DataObjectBase
                     "WHERE `phone` = '" + phone + "' AND  `week` = '" + currentWeek + "'";
             SimpleLogger.getInstance().info(currentClassName, queryString);
             List<Item> queryList = sdb.retrieveFromSimpleDB(queryString, true);
-            if (queryList == null)
+            if (queryList == null || queryList.size() == 0)
             {            
-                UUID prizeId = UUID.randomUUID();
+                prizeId = UUID.randomUUID().toString();
                 
                 List<ReplaceableAttribute> listAttributes = new ArrayList<ReplaceableAttribute>();
                 listAttributes.add(new ReplaceableAttribute("type", "StarbucksWeekly", true));
@@ -65,9 +67,15 @@ public class PrizeList extends DataObjectBase
                 listAttributes.add(new ReplaceableAttribute("claimed", "0", true));
                 listAttributes.add(new ReplaceableAttribute("week", currentWeek, true));
 
-                sdb.updateItem(Constants.PRIZE_DOMAIN, prizeId.toString(), listAttributes);   
+                sdb.updateItem(Constants.PRIZE_DOMAIN, prizeId, listAttributes);   
             } 
+            else
+            {
+                Item currentItem = queryList.get(0);
+                prizeId = currentItem.getName();
+            }
         }
+        return prizeId;
     }
     
     public boolean updatePrize(String prizeId, String phone, String email)

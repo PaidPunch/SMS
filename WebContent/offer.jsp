@@ -40,6 +40,7 @@
     </div>
     <div>
       <div id="egg-section">
+        <br>
         <a href="#" id="displayRedeem" onClick="clickRedeem('<%= request.getAttribute("offercode") %>');">
           <div class="eggImg" id="egg-image">
             <div class="eggText" id="egg-text">
