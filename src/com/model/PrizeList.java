@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.amazonaws.services.simpledb.model.Attribute;
 import com.amazonaws.services.simpledb.model.Item;
 import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
 import com.amazonaws.services.simpledb.model.UpdateCondition;
@@ -71,7 +72,18 @@ public class PrizeList extends DataObjectBase
             else
             {
                 Item currentItem = queryList.get(0);
-                prizeId = currentItem.getName();
+                for (Attribute attribute : currentItem.getAttributes())
+                {
+                    if (attribute.getName().equals("claimed"))
+                    {
+                        if (attribute.getValue().equals("0"))
+                        {
+                            prizeId = currentItem.getName();
+                        }
+                       
+                        break;
+                    }
+                }
             }
         }
         return prizeId;
