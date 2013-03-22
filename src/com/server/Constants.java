@@ -19,6 +19,8 @@ public class Constants
     public static String OFFERSRECORD_DOMAIN = "OffersRecord";
     public static String REDEEMRECORD_DOMAIN = "RedeemRecord";
     public static String FEEDBACK_DOMAIN = "CoopFeedback";
+    public static String PRIZE_DOMAIN = "CoopPrize";
+    public static String USER_DOMAIN = "CoopUser";
     
     public static String BUSINESS_DOMAIN = "CoopBusiness";
     public static String BUSINESSBRANCH_DOMAIN = "CoopBusinessBranch";
@@ -71,6 +73,8 @@ public class Constants
             OFFERSRECORD_DOMAIN = "OffersRecord";
             REDEEMRECORD_DOMAIN = "RedeemRecord";
             FEEDBACK_DOMAIN = "CoopFeedback";
+            PRIZE_DOMAIN = "CoopPrize";
+            USER_DOMAIN = "CoopUser";
             
             BUSINESS_DOMAIN = "CoopBusiness";
             BUSINESSBRANCH_DOMAIN = "CoopBusinessBranch";
@@ -85,7 +89,7 @@ public class Constants
             SimpleLogger.getInstance().info(Constants.class.getSimpleName(), "Initializing test server endpoints");
             
             // Settings for test server
-            JDBC_URL = "jdbc:mysql://paidpunchtest.csepczasc6nf.us-west-2.rds.amazonaws.com:3306/paidpunchtest";
+            JDBC_URL = "jdbc:mysql://paidpunchtest.csepczasc6nf.us-west-2.rds.amazonaws.com:3306/paidpunchprod";
             USERID = "paidpunch";
             PASSWORD = "Biscuit-1";
             
@@ -97,6 +101,8 @@ public class Constants
             OFFERSRECORD_DOMAIN = "OffersRecordTest";
             REDEEMRECORD_DOMAIN = "RedeemRecordTest";
             FEEDBACK_DOMAIN = "CoopFeedbackTest";
+            PRIZE_DOMAIN = "CoopPrizeTest";
+            USER_DOMAIN = "CoopUserTest";
             
             BUSINESS_DOMAIN = "CoopBusinessTest";
             BUSINESSBRANCH_DOMAIN = "CoopBusinessBranchTest";

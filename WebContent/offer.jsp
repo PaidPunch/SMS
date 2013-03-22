@@ -59,7 +59,7 @@
             Offer expires in: 
             <script language="JavaScript">
             TargetDate = "<%= request.getAttribute("expirydate") %>";
-            BackColor = "white";
+            BackColor = "transparent";
             ForeColor = "red";
             CountActive = true;
             CountStepper = -1;

@@ -37,7 +37,7 @@ public class LocalCoopServlet extends HttpServlet
                     "' and `expiryDatetime` > '" + currentDatetime + "'";
             SimpleLogger.getInstance().info(currentClassName, allQuery);
             List<Item> queryList = sdb.retrieveFromSimpleDB(allQuery, true);
-            if (queryList != null)
+            if (queryList != null && queryList.size() > 0)
             {                
                 current = new HashMap<String,String>();
                 Item currentItem = queryList.get(0);
@@ -96,7 +96,7 @@ public class LocalCoopServlet extends HttpServlet
         request.setAttribute("latitude", currentBranch.getLatitude());
         request.setAttribute("longitude", currentBranch.getLongitude());
         request.setAttribute("phone", Utility.standardizePhoneNumber(currentBranch.getContactNo()));
-        request.setAttribute("expirydate", offerInfo.get("expiryDatetime"));
+        request.setAttribute("expirydate", Utility.convertToJavascriptDatetimeFormat(offerInfo.get("expiryDatetime")));
         
         if (offerInfo.get("version").equals("1.0"))
         {

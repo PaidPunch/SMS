@@ -12,12 +12,10 @@ import com.twilio.sdk.verbs.TwiMLException;
 import com.twilio.sdk.verbs.Sms;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -118,8 +116,6 @@ public class Processor extends HttpServlet
         
         // Get current datetime
         Date currentDate = new java.util.Date();
-        SimpleDateFormat datetimeFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss aa z");
-        datetimeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         String currentDatetime = Utility.getCurrentDatetimeInUTC();
         
         // Get expiry datetime
@@ -127,7 +123,7 @@ public class Processor extends HttpServlet
         cal.setTime(currentDate);
         cal.add(Calendar.HOUR, +expiryHours);
         Date expiryDate = cal.getTime();
-        String expiryDateTime = datetimeFormat.format(expiryDate.getTime()); 
+        String expiryDateTime = Utility.getDatetimeInUTC(expiryDate);
         
         // TODO: Get first offer. Assume there's only one for now.
         String offerId;

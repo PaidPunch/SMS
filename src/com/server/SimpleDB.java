@@ -14,6 +14,7 @@ import com.amazonaws.services.simpledb.model.Item;
 import com.amazonaws.services.simpledb.model.PutAttributesRequest;
 import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
 import com.amazonaws.services.simpledb.model.SelectRequest;
+import com.amazonaws.services.simpledb.model.UpdateCondition;
 
 import org.json.*;
 
@@ -40,11 +41,23 @@ public class SimpleDB
 	}
 	
 	// This is used for both inserts and updates
-	public void updateItem(String domainName, String itemName, List<ReplaceableAttribute> attributes)
+	public boolean updateItem(String domainName, String itemName, List<ReplaceableAttribute> attributes)
+    {   
+	    return updateItem(domainName, itemName, attributes, null);
+    }
+	
+	public boolean updateItem(String domainName, String itemName, List<ReplaceableAttribute> attributes, UpdateCondition condition)
 	{			
+	    boolean success = true;
 		try
 		{
 			PutAttributesRequest request = new PutAttributesRequest(domainName, itemName, attributes);
+			
+			if (condition != null)
+			{
+			    request.setExpected(condition);
+			}
+			
 			sdb.putAttributes(request);
 		} 
 		catch (AmazonServiceException ase) 
@@ -56,6 +69,7 @@ public class SimpleDB
 		    SimpleLogger.getInstance().error(currentClassName, "AWS Error Code:   " + ase.getErrorCode());
 		    SimpleLogger.getInstance().error(currentClassName, "Error Type:       " + ase.getErrorType());
 		    SimpleLogger.getInstance().error(currentClassName, "Request ID:       " + ase.getRequestId());
+		    success = false;
 	    } 
 		catch (AmazonClientException ace) 
 	    {
@@ -63,7 +77,9 @@ public class SimpleDB
 	                + "a serious internal problem while trying to communicate with SimpleDB, "
 	                + "such as not being able to access the network.");
 			SimpleLogger.getInstance().error(currentClassName, "Error Message: " + ace.getMessage());
+			success = false;
 	    }
+		return success;
 	}
 	
 	private List<Item> selectQuery(String queryString)

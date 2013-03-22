@@ -1,6 +1,7 @@
 package com.sms;
 
 import com.model.Business;
+import com.model.PrizeList;
 import com.server.*;
 
 import java.io.IOException;
@@ -26,11 +27,9 @@ public class Offer extends LocalCoopServlet
     private String currentClassName;
     private static String baseRedeemUrl = "redeem?Code=";
     
-    private static final int weeklyPrizeNumberOfTexts = 3;
     private static final String progressBarTemplate = "<span style=\"float:left;padding:3px; width:25px;height:32px;\"><img src=\"images/egg.png\" alt=\"Golden Egg\"></span>" +
-            "<div class=\"progress progress-striped\" style=\"height:32px;line-height:32px;\"><div class=\"bar bar-success\" style=\"width: <PERCENT>%;\">" +
-            "Text <REMAINING> more times to claim a special prize!" +
-            "</div></div>" ;
+            "<div style=\"padding-top:6px;padding-right:3px;\"><div class=\"progress progress-striped\" style=\"height:20px;\"><div class=\"bar bar-success\" style=\"width: <PERCENT>%;\"></div></div>" +
+            "Text <REMAINING> more times to claim a special prize!";
     private static final String prizeButtonTemplate = "<div><a class=\"btn btn-large btn-warning\" href=\"#\">Claim Your Starbucks Giftcard!</a></div>";
 
     public Offer() 
@@ -92,7 +91,7 @@ public class Offer extends LocalCoopServlet
             SimpleDB sdb = SimpleDB.getInstance();
             String allQuery = "select count(*) from `" + Constants.OFFERS_DOMAIN + 
                     "` where `phone` = '" + phone + 
-                    "' and `expiryDatetime` >= '" + sundayOfCurrentWeekString + "'";
+                    "' and `createdDatetime` >= '" + sundayOfCurrentWeekString + "'";
             SimpleLogger.getInstance().info(currentClassName, allQuery);
             List<Item> queryList = sdb.retrieveFromSimpleDB(allQuery, true);
             if (queryList != null)
@@ -115,15 +114,14 @@ public class Offer extends LocalCoopServlet
         return numberOfTexts;
     }
     
-    private String getPrizeString(String phone)
+    private String getPrizeString(int numberOfTextsThisWeek)
     {
         String prizeString = null;
-        int numberOfTextsThisWeek = getNumberOfTextsThisWeek(phone);
-        if (numberOfTextsThisWeek < weeklyPrizeNumberOfTexts)
+        int percentOfBar = PrizeList.getInstance().getWeeklyTextPercentageComplete(numberOfTextsThisWeek);
+        if (percentOfBar < 100)
         {
-            int percentOfBar = (numberOfTextsThisWeek * 100) / weeklyPrizeNumberOfTexts;
             prizeString = progressBarTemplate.replace("<PERCENT>", Integer.toString(percentOfBar));
-            prizeString = prizeString.replace("<REMAINING>", Integer.toString(weeklyPrizeNumberOfTexts - numberOfTextsThisWeek));
+            prizeString = prizeString.replace("<REMAINING>", Integer.toString(PrizeList.getInstance().getRemainingTexts(numberOfTextsThisWeek)));
         }
         else
         {
@@ -160,7 +158,11 @@ public class Offer extends LocalCoopServlet
                 
                 if (currentBiz != null)
                 {
-                    String prizeString = getPrizeString(offerInfo.get("phone"));
+                    // Handle prize 
+                    String phone = offerInfo.get("phone");
+                    int numberOfTextsThisWeek = getNumberOfTextsThisWeek(phone);
+                    PrizeList.getInstance().createPrizeIfNecessary(numberOfTextsThisWeek, phone);
+                    String prizeString = getPrizeString(numberOfTextsThisWeek);
                     
                     setResponseAttributes(request, currentBiz, offerInfo);
                     request.setAttribute("offercode", codeString);

@@ -103,9 +103,28 @@ public final class Utility
     
     public static String getDatetimeInUTC(Date current)
     {
-        SimpleDateFormat datetimeFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss aa z");
+        SimpleDateFormat datetimeFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss z");
         datetimeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         return datetimeFormat.format(current.getTime()); 
+    }
+    
+    public static String convertToJavascriptDatetimeFormat(String current)
+    {
+        try
+        {
+            SimpleDateFormat originalFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss z");
+            originalFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            Date currentDate = originalFormat.parse(current);
+            
+            SimpleDateFormat javascriptFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss aa z");
+            javascriptFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            return javascriptFormat.format(currentDate.getTime());
+        }
+        catch (Exception e)
+        {
+            SimpleLogger.getInstance().error(Utility.class.getSimpleName(), e.getMessage());
+            return null;
+        }
     }
     
     public static String standardizePhoneNumber(String originalPhone)
@@ -139,9 +158,15 @@ public final class Utility
     
     public static Date getSundayOfCurrentWeek()
     {
-        Calendar c = Calendar.getInstance();
-        c.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
-        return c.getTime();
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 0); // ! clear would not reset the hour of day !
+        cal.clear(Calendar.MINUTE);
+        cal.clear(Calendar.SECOND);
+        cal.clear(Calendar.MILLISECOND);
+        
+        // get start of this week in milliseconds
+        cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
+        return cal.getTime();
     }
     
     public static Date addDays(Date date, int days) {
