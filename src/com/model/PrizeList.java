@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.amazonaws.services.simpledb.model.Attribute;
 import com.amazonaws.services.simpledb.model.Item;
 import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
 import com.amazonaws.services.simpledb.model.UpdateCondition;
@@ -80,7 +79,9 @@ public class PrizeList extends DataObjectBase
     
     public boolean updatePrize(String prizeId, String phone, String email)
     {         
-        UpdateCondition condition = new UpdateCondition("phone", phone, true);
+        // Remove all non-numeric characters from phone number
+        String formattedPhone = "+1" + phone.replaceAll("[^0-9]", "");
+        UpdateCondition condition = new UpdateCondition("phone", formattedPhone, true);
         
         List<ReplaceableAttribute> listAttributes = new ArrayList<ReplaceableAttribute>();
         listAttributes.add(new ReplaceableAttribute("email", email, true));

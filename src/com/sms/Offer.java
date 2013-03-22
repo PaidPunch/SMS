@@ -30,7 +30,7 @@ public class Offer extends LocalCoopServlet
     private static final String progressBarTemplate = "<span style=\"float:left;padding:3px; width:25px;height:32px;\"><img src=\"images/egg.png\" alt=\"Golden Egg\"></span>" +
             "<div style=\"padding-top:6px;padding-right:3px;\"><div class=\"progress progress-striped\" style=\"height:20px;\"><div class=\"bar bar-success\" style=\"width: <PERCENT>%;\"></div></div>" +
             "Text <REMAINING> more <TIME> to claim a special prize!";
-    private static final String prizeButtonTemplate = "<div><a class=\"btn btn-large btn-warning\" href=\"#\">Claim Your Starbucks Giftcard!</a></div>";
+    private static final String prizeButtonTemplate = "<div><a class=\"btn btn-large btn-warning\" href=\"claimprize.jsp?PrizeCode=<PRIZECODE>\">Claim Your Starbucks Giftcard!</a></div>";
 
     public Offer() 
     {  
@@ -114,7 +114,7 @@ public class Offer extends LocalCoopServlet
         return numberOfTexts;
     }
     
-    private String getPrizeString(int numberOfTextsThisWeek)
+    private String getPrizeString(int numberOfTextsThisWeek, String prizeCode)
     {
         String prizeString = null;
         int percentOfBar = PrizeList.getInstance().getWeeklyTextPercentageComplete(numberOfTextsThisWeek);
@@ -134,7 +134,7 @@ public class Offer extends LocalCoopServlet
         }
         else
         {
-            prizeString = prizeButtonTemplate;
+            prizeString = prizeButtonTemplate.replace("<PRIZECODE>", prizeCode);
         }
         return prizeString;
     }
@@ -170,8 +170,8 @@ public class Offer extends LocalCoopServlet
                     // Handle prize 
                     String phone = offerInfo.get("phone");
                     int numberOfTextsThisWeek = getNumberOfTextsThisWeek(phone);
-                    PrizeList.getInstance().createPrizeIfNecessary(numberOfTextsThisWeek, phone);
-                    String prizeString = getPrizeString(numberOfTextsThisWeek);
+                    String prizeCode = PrizeList.getInstance().createPrizeIfNecessary(numberOfTextsThisWeek, phone);
+                    String prizeString = getPrizeString(numberOfTextsThisWeek, prizeCode);
                     
                     setResponseAttributes(request, currentBiz, offerInfo);
                     request.setAttribute("offercode", codeString);
