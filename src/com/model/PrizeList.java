@@ -46,7 +46,7 @@ public class PrizeList extends DataObjectBase
     public String createPrizeIfNecessary(int numberOfTextsThisWeek, String phone)
     {                 
         String prizeId = null;
-        if (numberOfTextsThisWeek == weeklyPrizeNumberOfTexts)
+        if (numberOfTextsThisWeek >= weeklyPrizeNumberOfTexts)
         {
             // Start by making sure prize doesn't already exist for current week
             SimpleDB sdb = SimpleDB.getInstance();

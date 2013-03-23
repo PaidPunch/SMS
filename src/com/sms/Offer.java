@@ -28,8 +28,8 @@ public class Offer extends LocalCoopServlet
     private static String baseRedeemUrl = "redeem?Code=";
     
     private static final String progressBarTemplate = "<span style=\"float:left;padding:3px; width:25px;height:32px;\"><img src=\"images/goldenegg-glow.png\" alt=\"Golden Egg\"></span>" +
-            "<div style=\"padding-top:6px;padding-right:3px;\"><div class=\"progress progress-striped\" style=\"height:20px;\"><div class=\"bar bar-success\" style=\"width: <PERCENT>%;\"></div></div>" +
-            "Text <REMAINING> more <TIME> to claim a special prize!";
+            "<div style=\"padding-top:6px;padding-right:3px;\"><div class=\"progress progress-striped active\" style=\"height:20px;\"><div class=\"bar bar-success\" style=\"width: <PERCENT>%;\"></div></div>" +
+            "Text <REMAINING> more <TIME> to claim a Golden Egg!";
     private static final String prizeButtonTemplate = "<div><a class=\"btn btn-large btn-warning\" href=\"claimprize.jsp?PrizeCode=<PRIZECODE>\">Claim Your Starbucks Giftcard!</a></div>";
 
     public Offer() 

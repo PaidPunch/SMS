@@ -6,6 +6,18 @@
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
   </welcome-file-list>
+  <security-constraint>
+    <web-resource-collection>
+        <web-resource-name>Admin pages</web-resource-name>
+        <url-pattern>/admin/*</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+        <role-name>admin</role-name>
+    </auth-constraint>
+  </security-constraint>
+  <login-config>
+      <auth-method>BASIC</auth-method>
+  </login-config>
   <servlet>
       <servlet-name>Processor</servlet-name>
       <servlet-class>com.sms.Processor</servlet-class>
