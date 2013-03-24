@@ -4,20 +4,14 @@
 <html>
 
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <meta name="description" content="">
-  <meta name="author" content="">
-  <!-- No browser bar -->
-  <meta name=viewport content="width=device-width, initial-scale=1.0, maximum-scale=1">
-  <meta name=apple-mobile-web-app-capable content=yes>
-  <meta name=apple-mobile-web-app-status-bar-style content=black>
   <title>LocalCoop</title>
   <%@include file="style.html"%> 
+  <%@include file="meta.html"%> 
 </head>
 
 <body>
   <div style="text-align:center;">
-      <img src="../images/localcoop-logo-small.png" alt="LocalCoop">
+      <img src="img/localcoop-logo-small.png" alt="LocalCoop">
   </div>
   
   <form class="form-horizontal">  
@@ -118,7 +112,7 @@
   
   <!-- Javascript - Placed at the end of the document so the pages load faster -->
   <%@include file="script.html"%>
-  <script src="../resources/js/singlebusiness.js"></script>
+  <script src="js/singlebusiness.js"></script>
 </body>
 
 </html>
