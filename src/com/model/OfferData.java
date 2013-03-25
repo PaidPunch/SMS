@@ -1,27 +1,32 @@
 package com.model;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+
+import org.json.JSONObject;
 
 import com.amazonaws.services.simpledb.model.Attribute;
 import com.amazonaws.services.simpledb.model.Item;
 import com.server.Constants;
 import com.server.SimpleDB;
 import com.server.SimpleLogger;
+import com.server.Utility;
 
 public class OfferData 
 {
     private String currentClassName;
     private HashMap<String,String> offerMap;
-    private HashMap<String,String> offerRecords;
-    private HashMap<String,String> redeemRecords;
+    private ArrayList<HashMap<String,String>> offerRecords;
+    private ArrayList<HashMap<String,String>> redeemRecords;
     
     public OfferData()
     {
         currentClassName = OfferData.class.getSimpleName();
         offerMap = new HashMap<String,String>();
-        offerRecords = new HashMap<String,String>();
-        redeemRecords = new HashMap<String,String>();
+        offerRecords = new ArrayList<HashMap<String,String>>();
+        redeemRecords = new ArrayList<HashMap<String,String>>();
     }
     
     public void insertOfferData(String name, String value)
@@ -29,42 +34,74 @@ public class OfferData
         offerMap.put(name, value);
     }
     
-    public void getOfferRecords()
+    public void retrieveAssociatedData()
+    {
+        retrieveOfferRecords();
+        retrieveRedeemRecords();
+    }
+    
+    public ArrayList<HashMap<String,String>> getOfferRecords()
+    {
+        return offerRecords;
+    }
+    
+    public ArrayList<HashMap<String,String>> getRedeemRecords()
+    {
+        return redeemRecords;
+    }
+    
+    public JSONObject getJSON()
+    {
+        return Utility.convertHashMapToJSONObject(offerMap);
+    }
+    
+    public Date getCreatedDatetime()
+    {
+        String createdDatetimeString = offerMap.get("createdDatetime");
+        Date createdDatetime = Utility.parseDatetimeString(createdDatetimeString);
+        return createdDatetime;
+    }
+    
+    private void retrieveOfferRecords()
     {
         SimpleDB sdb = SimpleDB.getInstance();
         String allQuery = "select * from `" + Constants.OFFERSRECORD_DOMAIN + 
-                "` where `offerId` = '" + offerMap.get("offerId") + "`";
+                "` where `offerId` = '" + offerMap.get("offerId") + "'";
         SimpleLogger.getInstance().info(currentClassName, allQuery);
         List<Item> queryList = sdb.retrieveFromSimpleDB(allQuery, true);
         if (queryList != null)
         {           
             for (Item currentItem : queryList)
             {
-                offerRecords.put("offerRecordId", currentItem.getName());
+                HashMap<String,String> offerRecord = new HashMap<String,String>();
+                offerRecord.put("offerRecordId", currentItem.getName());
                 for (Attribute attribute : currentItem.getAttributes()) 
                 {
-                    offerRecords.put(attribute.getName(), attribute.getValue());
+                    offerRecord.put(attribute.getName(), attribute.getValue());
                 }   
+                offerRecords.add(offerRecord);
             }
         }
-    }
+    }    
     
-    public void getRedeemRecords()
+    private void retrieveRedeemRecords()
     {
         SimpleDB sdb = SimpleDB.getInstance();
         String allQuery = "select * from `" + Constants.REDEEMRECORD_DOMAIN + 
-                "` where `offerId` = '" + offerMap.get("offerId") + "`";
+                "` where `offerId` = '" + offerMap.get("offerId") + "'";
         SimpleLogger.getInstance().info(currentClassName, allQuery);
         List<Item> queryList = sdb.retrieveFromSimpleDB(allQuery, true);
         if (queryList != null)
         {           
             for (Item currentItem : queryList)
             {
-                redeemRecords.put("redeemRecordId", currentItem.getName());
+                HashMap<String,String> redeemRecord = new HashMap<String,String>();
+                redeemRecord.put("redeemRecordId", currentItem.getName());
                 for (Attribute attribute : currentItem.getAttributes()) 
                 {
-                    redeemRecords.put(attribute.getName(), attribute.getValue());
+                    redeemRecord.put(attribute.getName(), attribute.getValue());
                 }   
+                redeemRecords.add(redeemRecord);
             }
         }
     }

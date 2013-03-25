@@ -8,15 +8,15 @@
   </welcome-file-list>
   <security-constraint>
     <web-resource-collection>
-        <web-resource-name>Admin pages</web-resource-name>
-        <url-pattern>/admin/*</url-pattern>
+      <web-resource-name>Admin pages</web-resource-name>
+      <url-pattern>/admin/*</url-pattern>
     </web-resource-collection>
     <auth-constraint>
-        <role-name>admin</role-name>
+      <role-name>admin</role-name>
     </auth-constraint>
   </security-constraint>
   <login-config>
-      <auth-method>BASIC</auth-method>
+    <auth-method>BASIC</auth-method>
   </login-config>
   <servlet>
       <servlet-name>Processor</servlet-name>
@@ -42,6 +42,10 @@
       <servlet-name>Prizes</servlet-name>
       <servlet-class>com.sms.Prizes</servlet-class>
   </servlet>
+  <servlet>
+      <servlet-name>Offers</servlet-name>
+      <servlet-class>com.sms.Offers</servlet-class>
+  </servlet>
   <servlet-mapping>
     <servlet-name>Processor</servlet-name>
     <url-pattern>/processor</url-pattern>
@@ -65,5 +69,9 @@
   <servlet-mapping>
     <servlet-name>Prizes</servlet-name>
     <url-pattern>/prizes</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>Offers</servlet-name>
+    <url-pattern>/admin/offers</url-pattern>
   </servlet-mapping>
 </web-app>

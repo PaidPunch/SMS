@@ -13,6 +13,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
@@ -39,6 +41,22 @@ public final class Utility
         return sb.toString();
     }
     
+    public static JSONObject convertHashMapToJSONObject(HashMap<String,String> mp)
+    {
+        JSONObject obj = new JSONObject();
+        try
+        {
+            for (Map.Entry<String, String> entry : mp.entrySet())
+            {
+                obj.append(entry.getKey(), entry.getValue());
+            }    
+        }
+        catch (Exception e)
+        {
+            SimpleLogger.getInstance().error(Utility.class.getSimpleName(), e.getMessage());
+        }
+        return obj;
+    }
 
     public static void jsonResponse(HttpServletRequest request, HttpServletResponse response, JSONObject responseMap)
             throws IOException 
@@ -108,6 +126,34 @@ public final class Utility
         return datetimeFormat.format(current.getTime()); 
     }
     
+    public static Date parseDatetimeString(String current)
+    {
+        Date currentDate = null;
+        try
+        {
+            SimpleDateFormat datetimeFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss z");
+            datetimeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            currentDate = datetimeFormat.parse(current);    
+        }
+        catch (Exception e)
+        {
+            SimpleLogger.getInstance().error(Utility.class.getSimpleName(), e.getMessage());
+            
+            // Try different date format since some older dates were stored differently
+            try
+            {
+                SimpleDateFormat datetimeFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss aa z");
+                datetimeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+                currentDate = datetimeFormat.parse(current);    
+            }
+            catch (Exception e2)
+            {
+                SimpleLogger.getInstance().error(Utility.class.getSimpleName(), e2.getMessage());
+            }
+        }
+        return currentDate; 
+    }
+    
     public static String convertToJavascriptDatetimeFormat(String current)
     {
         try
@@ -158,7 +204,14 @@ public final class Utility
     
     public static Date getSundayOfCurrentWeek()
     {
+        Date currentDate = new Date();
+        return getSundayOfWeek(currentDate);
+    }
+    
+    public static Date getSundayOfWeek(Date currentDate)
+    {
         Calendar cal = Calendar.getInstance();
+        cal.setTime(currentDate);
         cal.set(Calendar.HOUR_OF_DAY, 0); // ! clear would not reset the hour of day !
         cal.clear(Calendar.MINUTE);
         cal.clear(Calendar.SECOND);

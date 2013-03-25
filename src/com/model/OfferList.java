@@ -3,7 +3,12 @@ package com.model;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import com.amazonaws.services.simpledb.model.Attribute;
 import com.amazonaws.services.simpledb.model.Item;
@@ -18,6 +23,8 @@ public class OfferList extends DataObjectBase
     private static OfferList singleton;
     private ArrayList<OfferData> offerArray;
     
+    private HashMap<String, HashMap<String,ArrayList<JSONObject>>> analyticsStructure;
+    
     private OfferList()
     {
         currentClassName = OfferList.class.getSimpleName();
@@ -25,7 +32,7 @@ public class OfferList extends DataObjectBase
         
         lastRefreshTime = null;
         // Refresh interval in milliseconds
-        refreshInterval = 15 * 60 * 1000L;
+        refreshInterval = 60 * 60 * 1000L;
     }
     
     public ArrayList<OfferData> getOffers()
@@ -77,11 +84,12 @@ public class OfferList extends DataObjectBase
         try
         {
             Date prevMonthDatetime = getFirstOfPreviousMonth();
-            String prevMonthDatetimeString = Utility.getDatetimeInUTC(prevMonthDatetime);
+            Date sundayOfFirstOfPreviousMonth = Utility.getSundayOfWeek(prevMonthDatetime);
+            String sundayOfFirstOfPreviousMonthString = Utility.getDatetimeInUTC(sundayOfFirstOfPreviousMonth);
             
             SimpleDB sdb = SimpleDB.getInstance();
             String allQuery = "select * from `" + Constants.OFFERS_DOMAIN + 
-                    "` where `expiryDatetime` > '" + prevMonthDatetimeString + "'";
+                    "` where `createdDatetime` > '" + sundayOfFirstOfPreviousMonthString + "'";
             SimpleLogger.getInstance().info(currentClassName, allQuery);
             List<Item> queryList = sdb.retrieveFromSimpleDB(allQuery, true);
             if (queryList != null)
@@ -95,8 +103,7 @@ public class OfferList extends DataObjectBase
                     {
                         currentOffer.insertOfferData(attribute.getName(), attribute.getValue());
                     }   
-                    currentOffer.getOfferRecords();
-                    currentOffer.getRedeemRecords();
+                    currentOffer.retrieveAssociatedData();
                     current.add(currentOffer);
                 }
             }
@@ -106,6 +113,85 @@ public class OfferList extends DataObjectBase
             SimpleLogger.getInstance().error(currentClassName, ex.getMessage());
         }
         return current;
+    }
+    
+    private void bucketizeCurrentOffer(OfferData offer)
+    {
+        Date offerDate = offer.getCreatedDatetime();
+        Date sundayOfWeek = Utility.getSundayOfWeek(offerDate);
+        String sundayOfWeekString = Utility.getDatetimeInUTC(sundayOfWeek);
+        
+        // Get the list of objects for that week
+        HashMap<String,ArrayList<JSONObject>> weekObjs = analyticsStructure.get(sundayOfWeekString);
+        if (weekObjs == null)
+        {
+            weekObjs = new HashMap<String,ArrayList<JSONObject>>();
+            analyticsStructure.put(sundayOfWeekString, weekObjs);
+        }
+        
+        // Get the list of offers for that week
+        ArrayList<JSONObject> offers = weekObjs.get("Offers");
+        if (offers == null)
+        {
+            offers = new ArrayList<JSONObject>();
+            weekObjs.put("Offers", offers);
+        }
+        
+        // Insert json object of offer into array for that week
+        offers.add(offer.getJSON());
+    }
+    
+    private JSONArray getJSONOfCategory(HashMap<String,ArrayList<JSONObject>> mp)
+    {
+        JSONArray arrayOfCategories = new JSONArray();
+        try
+        {
+            for (Map.Entry<String, ArrayList<JSONObject>> entry : mp.entrySet())
+            {
+                JSONObject objJSON = new JSONObject();
+                JSONArray arrayJSON = new JSONArray();
+                ArrayList<JSONObject> arrayOfJSONObjects = entry.getValue();
+                for (JSONObject obj : arrayOfJSONObjects)
+                {
+                    arrayJSON.put(obj);
+                }
+                objJSON.put(entry.getKey(), arrayJSON);
+                arrayOfCategories.put(objJSON);
+            }    
+        }
+        catch (Exception e)
+        {
+            SimpleLogger.getInstance().error(Utility.class.getSimpleName(), e.getMessage());
+        } 
+        return arrayOfCategories;
+    }
+    
+    public JSONArray getOffersArray()
+    {
+        analyticsStructure = new HashMap<String,HashMap<String,ArrayList<JSONObject>>>();
+        refreshBusinessesFromSDBIfNecessary();
+        for (OfferData offer : offerArray)
+        {
+            bucketizeCurrentOffer(offer);
+        }
+        
+        JSONArray arrayOfWeeks = new JSONArray();
+        try
+        {
+            for (Map.Entry<String, HashMap<String,ArrayList<JSONObject>>> entry : analyticsStructure.entrySet())
+            {
+                JSONArray arrayOfCategories = getJSONOfCategory(entry.getValue());
+                JSONObject objWeek = new JSONObject();
+                objWeek.put(entry.getKey(), arrayOfCategories);
+                arrayOfWeeks.put(objWeek);
+            }    
+        }
+        catch (Exception e)
+        {
+            SimpleLogger.getInstance().error(Utility.class.getSimpleName(), e.getMessage());
+        } 
+        
+        return arrayOfWeeks;
     }
     
     // Singleton 
