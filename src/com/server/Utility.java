@@ -48,8 +48,9 @@ public final class Utility
         {
             for (Map.Entry<String, String> entry : mp.entrySet())
             {
-                obj.append(entry.getKey(), entry.getValue());
+                obj.put(entry.getKey(), entry.getValue());
             }    
+            SimpleLogger.getInstance().info(Utility.class.getSimpleName(), obj.toString());
         }
         catch (Exception e)
         {
@@ -171,6 +172,13 @@ public final class Utility
             SimpleLogger.getInstance().error(Utility.class.getSimpleName(), e.getMessage());
             return null;
         }
+    }
+    
+    public static Date getCreatedDatetime(HashMap<String,String> mp)
+    {
+        String createdDatetimeString = mp.get("createdDatetime");
+        Date createdDatetime = Utility.parseDatetimeString(createdDatetimeString);
+        return createdDatetime;
     }
     
     public static String standardizePhoneNumber(String originalPhone)

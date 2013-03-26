@@ -1,18 +1,14 @@
 package com.model;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-
-import org.json.JSONObject;
 
 import com.amazonaws.services.simpledb.model.Attribute;
 import com.amazonaws.services.simpledb.model.Item;
 import com.server.Constants;
 import com.server.SimpleDB;
 import com.server.SimpleLogger;
-import com.server.Utility;
 
 public class OfferData 
 {
@@ -40,6 +36,11 @@ public class OfferData
         retrieveRedeemRecords();
     }
     
+    public HashMap<String,String> getOfferMap()
+    {
+        return offerMap;
+    }
+    
     public ArrayList<HashMap<String,String>> getOfferRecords()
     {
         return offerRecords;
@@ -50,23 +51,11 @@ public class OfferData
         return redeemRecords;
     }
     
-    public JSONObject getJSON()
-    {
-        return Utility.convertHashMapToJSONObject(offerMap);
-    }
-    
-    public Date getCreatedDatetime()
-    {
-        String createdDatetimeString = offerMap.get("createdDatetime");
-        Date createdDatetime = Utility.parseDatetimeString(createdDatetimeString);
-        return createdDatetime;
-    }
-    
     private void retrieveOfferRecords()
     {
         SimpleDB sdb = SimpleDB.getInstance();
         String allQuery = "select * from `" + Constants.OFFERSRECORD_DOMAIN + 
-                "` where `offerId` = '" + offerMap.get("offerId") + "'";
+                "` where `offerId` = '" + offerMap.get("textId") + "'";
         SimpleLogger.getInstance().info(currentClassName, allQuery);
         List<Item> queryList = sdb.retrieveFromSimpleDB(allQuery, true);
         if (queryList != null)
@@ -88,7 +77,7 @@ public class OfferData
     {
         SimpleDB sdb = SimpleDB.getInstance();
         String allQuery = "select * from `" + Constants.REDEEMRECORD_DOMAIN + 
-                "` where `offerId` = '" + offerMap.get("offerId") + "'";
+                "` where `offerId` = '" + offerMap.get("textId") + "'";
         SimpleLogger.getInstance().info(currentClassName, allQuery);
         List<Item> queryList = sdb.retrieveFromSimpleDB(allQuery, true);
         if (queryList != null)

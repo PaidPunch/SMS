@@ -98,7 +98,7 @@ public class OfferList extends DataObjectBase
                 for (Item currentItem : queryList)
                 {
                     OfferData currentOffer = new OfferData();
-                    currentOffer.insertOfferData("offerId", currentItem.getName());
+                    currentOffer.insertOfferData("textId", currentItem.getName());
                     for (Attribute attribute : currentItem.getAttributes()) 
                     {
                         currentOffer.insertOfferData(attribute.getName(), attribute.getValue());
@@ -115,9 +115,9 @@ public class OfferList extends DataObjectBase
         return current;
     }
     
-    private void bucketizeCurrentOffer(OfferData offer)
+    private void bucketizeHashMapByWeek(HashMap<String,String> mp, String category)
     {
-        Date offerDate = offer.getCreatedDatetime();
+        Date offerDate = Utility.getCreatedDatetime(mp);
         Date sundayOfWeek = Utility.getSundayOfWeek(offerDate);
         String sundayOfWeekString = Utility.getDatetimeInUTC(sundayOfWeek);
         
@@ -129,16 +129,16 @@ public class OfferList extends DataObjectBase
             analyticsStructure.put(sundayOfWeekString, weekObjs);
         }
         
-        // Get the list of offers for that week
-        ArrayList<JSONObject> offers = weekObjs.get("Offers");
-        if (offers == null)
+        // Get the list of items in that category for that week
+        ArrayList<JSONObject> categoryItems = weekObjs.get(category);
+        if (categoryItems == null)
         {
-            offers = new ArrayList<JSONObject>();
-            weekObjs.put("Offers", offers);
+            categoryItems = new ArrayList<JSONObject>();
+            weekObjs.put(category, categoryItems);
         }
         
         // Insert json object of offer into array for that week
-        offers.add(offer.getJSON());
+        categoryItems.add(Utility.convertHashMapToJSONObject(mp));
     }
     
     private JSONArray getJSONOfCategory(HashMap<String,ArrayList<JSONObject>> mp)
@@ -172,7 +172,19 @@ public class OfferList extends DataObjectBase
         refreshBusinessesFromSDBIfNecessary();
         for (OfferData offer : offerArray)
         {
-            bucketizeCurrentOffer(offer);
+            bucketizeHashMapByWeek(offer.getOfferMap(), "Offers");
+            
+            ArrayList<HashMap<String,String>> offerRecords = offer.getOfferRecords();
+            for (HashMap<String,String> offerRecord : offerRecords)
+            {
+                bucketizeHashMapByWeek(offerRecord, "OfferRecords");
+            }
+            
+            ArrayList<HashMap<String,String>> redeemRecords = offer.getRedeemRecords();
+            for (HashMap<String,String> redeemRecord : redeemRecords)
+            {
+                bucketizeHashMapByWeek(redeemRecord, "RedeemRecords");
+            }
         }
         
         JSONArray arrayOfWeeks = new JSONArray();
