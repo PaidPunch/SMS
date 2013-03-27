@@ -2,9 +2,6 @@ $(document).ready(function() {
     
     $('#feedback-btn').click(function() {
         var feedback = $('#feedback').val();
-        console.log('test');
-        console.log(feedback);
-        console.log(window.offerid);
         
         $.ajax({
             type : "post",

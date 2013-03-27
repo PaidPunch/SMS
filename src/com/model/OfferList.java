@@ -24,6 +24,7 @@ public class OfferList extends DataObjectBase
     private ArrayList<OfferData> offerArray;
     
     private HashMap<String, HashMap<String,ArrayList<JSONObject>>> analyticsStructure;
+    private JSONArray arrayOfAnalytics;
     
     private OfferList()
     {
@@ -48,6 +49,7 @@ public class OfferList extends DataObjectBase
             try
             {
                 getOffersFromSDB();
+                refreshAnalytics();
                 
                 lastRefreshTime = new Date();
             }
@@ -58,6 +60,43 @@ public class OfferList extends DataObjectBase
                 offerArray = null;
             }
         }
+    }
+    
+    private void refreshAnalytics()
+    {
+        arrayOfAnalytics = new JSONArray();
+        analyticsStructure = new HashMap<String,HashMap<String,ArrayList<JSONObject>>>();
+        for (OfferData offer : offerArray)
+        {
+            bucketizeHashMapByWeek(offer.getOfferMap(), "Offers");
+            
+            ArrayList<HashMap<String,String>> offerRecords = offer.getOfferRecords();
+            for (HashMap<String,String> offerRecord : offerRecords)
+            {
+                bucketizeHashMapByWeek(offerRecord, "OfferRecords");
+            }
+            
+            ArrayList<HashMap<String,String>> redeemRecords = offer.getRedeemRecords();
+            for (HashMap<String,String> redeemRecord : redeemRecords)
+            {
+                bucketizeHashMapByWeek(redeemRecord, "RedeemRecords");
+            }
+        }
+        
+        try
+        {
+            for (Map.Entry<String, HashMap<String,ArrayList<JSONObject>>> entry : analyticsStructure.entrySet())
+            {
+                JSONObject listOfRecordsJSON = getJSONOfCategory(entry.getValue());
+                // Insert week
+                listOfRecordsJSON.put("week", entry.getKey());
+                arrayOfAnalytics.put(listOfRecordsJSON);
+            }    
+        }
+        catch (Exception e)
+        {
+            SimpleLogger.getInstance().error(Utility.class.getSimpleName(), e.getMessage());
+        } 
     }
     
     private Date getFirstOfPreviousMonth()
@@ -101,7 +140,16 @@ public class OfferList extends DataObjectBase
                     currentOffer.insertOfferData("textId", currentItem.getName());
                     for (Attribute attribute : currentItem.getAttributes()) 
                     {
-                        currentOffer.insertOfferData(attribute.getName(), attribute.getValue());
+                        String name = attribute.getName();
+                        if (name.equals("expiryDatetime") || name.equals("createdDatetime"))
+                        {
+                            String date = Utility.convertToJavascriptDatetimeFormat(attribute.getValue());
+                            currentOffer.insertOfferData(name, date);
+                        }
+                        else
+                        {
+                            currentOffer.insertOfferData(name, attribute.getValue());    
+                        }
                     }   
                     currentOffer.retrieveAssociatedData();
                     current.add(currentOffer);
@@ -141,69 +189,34 @@ public class OfferList extends DataObjectBase
         categoryItems.add(Utility.convertHashMapToJSONObject(mp));
     }
     
-    private JSONArray getJSONOfCategory(HashMap<String,ArrayList<JSONObject>> mp)
+    private JSONObject getJSONOfCategory(HashMap<String,ArrayList<JSONObject>> mp)
     {
-        JSONArray arrayOfCategories = new JSONArray();
+        JSONObject listOfRecordsJSON = new JSONObject();
         try
         {
             for (Map.Entry<String, ArrayList<JSONObject>> entry : mp.entrySet())
             {
-                JSONObject objJSON = new JSONObject();
                 JSONArray arrayJSON = new JSONArray();
                 ArrayList<JSONObject> arrayOfJSONObjects = entry.getValue();
                 for (JSONObject obj : arrayOfJSONObjects)
                 {
                     arrayJSON.put(obj);
                 }
-                objJSON.put(entry.getKey(), arrayJSON);
-                arrayOfCategories.put(objJSON);
+                listOfRecordsJSON.put(entry.getKey(), arrayJSON);
             }    
         }
         catch (Exception e)
         {
             SimpleLogger.getInstance().error(Utility.class.getSimpleName(), e.getMessage());
         } 
-        return arrayOfCategories;
+        return listOfRecordsJSON;
     }
     
     public JSONArray getOffersArray()
     {
-        analyticsStructure = new HashMap<String,HashMap<String,ArrayList<JSONObject>>>();
         refreshBusinessesFromSDBIfNecessary();
-        for (OfferData offer : offerArray)
-        {
-            bucketizeHashMapByWeek(offer.getOfferMap(), "Offers");
-            
-            ArrayList<HashMap<String,String>> offerRecords = offer.getOfferRecords();
-            for (HashMap<String,String> offerRecord : offerRecords)
-            {
-                bucketizeHashMapByWeek(offerRecord, "OfferRecords");
-            }
-            
-            ArrayList<HashMap<String,String>> redeemRecords = offer.getRedeemRecords();
-            for (HashMap<String,String> redeemRecord : redeemRecords)
-            {
-                bucketizeHashMapByWeek(redeemRecord, "RedeemRecords");
-            }
-        }
-        
-        JSONArray arrayOfWeeks = new JSONArray();
-        try
-        {
-            for (Map.Entry<String, HashMap<String,ArrayList<JSONObject>>> entry : analyticsStructure.entrySet())
-            {
-                JSONArray arrayOfCategories = getJSONOfCategory(entry.getValue());
-                JSONObject objWeek = new JSONObject();
-                objWeek.put(entry.getKey(), arrayOfCategories);
-                arrayOfWeeks.put(objWeek);
-            }    
-        }
-        catch (Exception e)
-        {
-            SimpleLogger.getInstance().error(Utility.class.getSimpleName(), e.getMessage());
-        } 
-        
-        return arrayOfWeeks;
+           
+        return arrayOfAnalytics;
     }
     
     // Singleton 

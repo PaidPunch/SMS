@@ -61,16 +61,6 @@
 	/* used with chatbox demo */
 	$.istying = $('textarea#chat-box-textarea');
 	
-	/* chart colors default */
-	var $chrt_border_color = "#efefef";
-	var $chrt_grid_color = "#DDD"
-	var $chrt_main = "#E24913";
-	var $chrt_second = "#4b99cb";
-	var $chrt_third = "#FF9F01";
-	var $chrt_fourth = "#87BA17";
-	var $chrt_fifth = "#BD362F";
-	var $chrt_mono = "#000";
-	
 	//turn this on if your browser supports audio
 	
 	/*var $pop_sound = new Audio("sounds/sound-pop-clear.mp3"); // buffers automatically when created
@@ -107,10 +97,10 @@
 		execute_idevice_functions();	
 		
 		/* detect if mobile */
-		isMobile() 
+		isMobile();
 		
 		/* all buttons */
-		setup_all_buttons()
+		setup_all_buttons();
         
         /* draw easy pie */
   		setup_easypie();
@@ -253,8 +243,8 @@
 				onFullscreen: function(){},
 				customButton: false,
 				customClass: 'folder-10 | next-10',
-				customStart: function(){ alert('Hello you, this is a custom button...') },
-				customEnd: function(){ alert('bye, till next time...') },
+				customStart: function(){ alert('Hello you, this is a custom button...'); },
+				customEnd: function(){ alert('bye, till next time...'); },
 				buttonOrder: '%refresh% %delete% %custom% %edit% %fullscreen% %toggle%',
 				opacity: 1.0,
 				dragHandle: '> header',
@@ -319,8 +309,8 @@
 				onFullscreen: function(){},
 				customButton: false, // custom button disabled for mobile
 				customClass: 'folder-10 | next-10',
-				customStart: function(){ alert('Hello you, this is a custom button...') },
-				customEnd: function(){ alert('bye, till next time...') },
+				customStart: function(){ alert('Hello you, this is a custom button...'); },
+				customEnd: function(){ alert('bye, till next time...'); },
 				buttonOrder: '%refresh% %delete% %custom% %edit% %fullscreen% %toggle%',
 				opacity: 1.0,
 				dragHandle: '> header',

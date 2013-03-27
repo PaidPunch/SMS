@@ -170,7 +170,7 @@ public final class Utility
         catch (Exception e)
         {
             SimpleLogger.getInstance().error(Utility.class.getSimpleName(), e.getMessage());
-            return null;
+            return current;
         }
     }
     

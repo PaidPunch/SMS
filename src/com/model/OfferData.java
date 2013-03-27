@@ -9,6 +9,7 @@ import com.amazonaws.services.simpledb.model.Item;
 import com.server.Constants;
 import com.server.SimpleDB;
 import com.server.SimpleLogger;
+import com.server.Utility;
 
 public class OfferData 
 {
@@ -66,7 +67,16 @@ public class OfferData
                 offerRecord.put("offerRecordId", currentItem.getName());
                 for (Attribute attribute : currentItem.getAttributes()) 
                 {
-                    offerRecord.put(attribute.getName(), attribute.getValue());
+                    String name = attribute.getName();
+                    if (name.equals("expiryDatetime") || name.equals("createdDatetime"))
+                    {
+                        String date = Utility.convertToJavascriptDatetimeFormat(attribute.getValue());
+                        offerRecord.put(name, date);
+                    }
+                    else
+                    {
+                        offerRecord.put(name, attribute.getValue());    
+                    }
                 }   
                 offerRecords.add(offerRecord);
             }
@@ -88,7 +98,16 @@ public class OfferData
                 redeemRecord.put("redeemRecordId", currentItem.getName());
                 for (Attribute attribute : currentItem.getAttributes()) 
                 {
-                    redeemRecord.put(attribute.getName(), attribute.getValue());
+                    String name = attribute.getName();
+                    if (name.equals("expiryDatetime") || name.equals("createdDatetime"))
+                    {
+                        String date = Utility.convertToJavascriptDatetimeFormat(attribute.getValue());
+                        redeemRecord.put(name, date);
+                    }
+                    else
+                    {
+                        redeemRecord.put(name, attribute.getValue());    
+                    }
                 }   
                 redeemRecords.add(redeemRecord);
             }
