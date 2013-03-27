@@ -150,7 +150,7 @@
                     <div class="inner-spacer"> 
                       <!-- content goes here -->
           
-                      <!-- sin chart -->
+                      <!-- bar chart -->
                       <div id="monthly-bar-chart" class="chart"></div>
           
                     </div>
@@ -188,7 +188,7 @@
                     <div class="inner-spacer"> 
                       <!-- content goes here -->
           
-                      <!-- sin chart -->
+                      <!-- bar chart -->
                       <div id="weekly-bar-chart" class="chart"></div>
           
                     </div>
@@ -196,6 +196,46 @@
                 </div>
                 <!-- end widget -->
               </div>  <!-- content-row-2 -->
+              
+              <div id="content-row-3" class="row-fluid">
+                <article class="span6">    
+                  <!-- new widget -->
+                  <div class="jarviswidget" id="widget-id-0">
+                    <header>
+                        <h2>Number of texts by bizcode in current week</h2>                           
+                    </header>
+                    <div>
+                      <div class="jarviswidget-editbox">
+                        <div>
+                            <label>Title:</label>
+                            <input type="text" />
+                        </div>
+                        <div>
+                            <label>Styles:</label>
+                            <span data-widget-setstyle="purple" class="purple-btn"></span>
+                            <span data-widget-setstyle="navyblue" class="navyblue-btn"></span>
+                            <span data-widget-setstyle="green" class="green-btn"></span>
+                            <span data-widget-setstyle="yellow" class="yellow-btn"></span>
+                            <span data-widget-setstyle="orange" class="orange-btn"></span>
+                            <span data-widget-setstyle="pink" class="pink-btn"></span>
+                            <span data-widget-setstyle="red" class="red-btn"></span>
+                            <span data-widget-setstyle="darkgrey" class="darkgrey-btn"></span>
+                            <span data-widget-setstyle="black" class="black-btn"></span>
+                        </div>
+                      </div>
+            
+                      <div class="inner-spacer"> 
+                        <!-- content goes here -->
+            
+                        <!-- pie chart -->
+                        <div id="businesses-pie-chart" class="chart"></div>
+            
+                      </div>
+                    </div>
+                  </div>
+                  <!-- end widget -->
+                </article>
+              </div>  <!-- content-row-3 -->
             </section>
           </div>
           

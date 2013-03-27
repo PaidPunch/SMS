@@ -34,6 +34,8 @@ function display_charts(responseJson)
 	}
 	
 	display_weekly_chart(latestWeekValues);
+	
+	display_businesses_pie_chart(latestWeekValues.Offers);
 }
 
 function display_monthly_chart(responseJson) 
@@ -256,3 +258,72 @@ function display_weekly_chart(latestWeekValues)
 		$.plot($("#weekly-bar-chart"), ds, options);
 	};
 };
+
+function display_businesses_pie_chart(offersArray)
+{
+	console.log(offersArray);
+	
+	/* pie chart */	
+	if ($('#businesses-pie-chart').length) {
+		
+		var offersDictionary = {};
+		var arrayLength = offersArray.length;
+		for (var i = 0; i < arrayLength; i += 1)
+		{
+			var offer = offersArray[i];
+			var bizcode = offer.bizCode;
+			if (offersDictionary[bizcode] == null)
+			{
+				offersDictionary[bizcode] = 1;
+			}
+			else
+			{
+				offersDictionary[bizcode] = offersDictionary[bizcode] + 1;
+			}
+		}
+
+		var data_pie = [];
+		var index = 0;
+		for (var bizcodename in offersDictionary)
+		{
+			data_pie[index] = {
+				label : bizcodename,
+				data : offersDictionary[bizcodename]
+			};
+			index = index + 1;
+		}
+
+		$.plot($("#businesses-pie-chart"), data_pie, {
+			series : {
+				pie : {
+					show : true,
+					radius : 1,
+					label : {
+						show : true,
+						radius : 2 / 3,
+						formatter : function(label, series) {
+							return '<div style="font-size:15px;text-align:center;padding:4px;color:white;">' + series.data[0][1] + '</div>';
+						},
+						threshold : 0.1
+					}
+				}
+			},
+			legend : {
+				show : true,
+				noColumns : 1, // number of colums in legend table
+				labelFormatter : null, // fn: string -> string
+				labelBoxBorderColor : "#000", // border color for the little label boxes
+				container : null, // container (as jQuery object) to put legend in, null means default on top of graph
+				position : "ne", // position of default legend container within plot
+				margin : [5, 10], // distance from grid edge to default legend container within plot
+				backgroundColor : "#efefef", // null means auto-detect
+				backgroundOpacity : 1 // set to 0 to avoid background
+			},
+			grid : {
+				hoverable : true,
+				clickable : true
+			},
+		});
+	}
+	/* end pie chart */
+}
