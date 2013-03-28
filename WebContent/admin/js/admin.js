@@ -59,6 +59,7 @@ function display_monthly_chart(month)
 		var individualWidth = 20 * 60 * 60 * 1000;
 		var ds = new Array();
 		ds.push({
+			label : "texts",
 			data : offerData,
 			bars : {
 				show : true,
@@ -67,6 +68,7 @@ function display_monthly_chart(month)
 			}
 		});
 		ds.push({
+			label : "offer views",
 			data : offerRecordData,
 			bars : {
 				show : true,
@@ -75,6 +77,7 @@ function display_monthly_chart(month)
 			}
 		});
 		ds.push({
+			label : "redeem views",
 			data : redeemRecordData,
 			bars : {
 				show : true,
@@ -103,7 +106,17 @@ function display_monthly_chart(month)
 					borderWidth : 0,
 					borderColor : $chrt_border_color,
 				},
-				legend : true,
+				legend : {
+					show : true,
+					noColumns : 1, // number of colums in legend table
+					labelFormatter : null, // fn: string -> string
+					labelBoxBorderColor : "#000", // border color for the little label boxes
+					container : null, // container (as jQuery object) to put legend in, null means default on top of graph
+					position : "ne", // position of default legend container within plot
+					margin : [5, 10], // distance from grid edge to default legend container within plot
+					backgroundColor : "#efefef", // null means auto-detect
+					backgroundOpacity : 1 // set to 0 to avoid background
+				},
 				tooltip : true,
 				tooltipOpts : {
 					content : "<b>%x</b> = <span>%y</span>",
@@ -155,6 +168,7 @@ function display_weekly_chart(latestWeekValues, latestWeek)
 		var individualWidth = 5 * 60 * 60 * 1000;
 		var ds = new Array();
 		ds.push({
+			label : "texts",
 			data : offerData,
 			bars : {
 				show : true,
@@ -163,6 +177,7 @@ function display_weekly_chart(latestWeekValues, latestWeek)
 			}
 		});
 		ds.push({
+			label : "offer views",
 			data : offerRecordData,
 			bars : {
 				show : true,
@@ -171,6 +186,7 @@ function display_weekly_chart(latestWeekValues, latestWeek)
 			}
 		});
 		ds.push({
+			label : "redeem views",
 			data : redeemRecordData,
 			bars : {
 				show : true,
@@ -200,7 +216,17 @@ function display_weekly_chart(latestWeekValues, latestWeek)
 					borderWidth : 0,
 					borderColor : $chrt_border_color,
 				},
-				legend : true,
+				legend : {
+					show : true,
+					noColumns : 1, // number of colums in legend table
+					labelFormatter : null, // fn: string -> string
+					labelBoxBorderColor : "#000", // border color for the little label boxes
+					container : null, // container (as jQuery object) to put legend in, null means default on top of graph
+					position : "ne", // position of default legend container within plot
+					margin : [5, 10], // distance from grid edge to default legend container within plot
+					backgroundColor : "#efefef", // null means auto-detect
+					backgroundOpacity : 1 // set to 0 to avoid background
+				},
 				tooltip : true,
 				tooltipOpts : {
 					content : "<b>%x</b> = <span>%y</span>",

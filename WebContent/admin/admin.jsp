@@ -202,7 +202,7 @@
                   <!-- new widget -->
                   <div class="jarviswidget" id="widget-id-0">
                     <header>
-                        <h2>Number of texts by bizcode in current week</h2>                           
+                        <h2>Nbr of texts by bizcode (current week)</h2>                           
                     </header>
                     <div>
                       <div class="jarviswidget-editbox">
