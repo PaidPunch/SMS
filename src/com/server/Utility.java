@@ -99,6 +99,40 @@ public final class Utility
 
     }
     
+    public static void errorResponse(HttpServletRequest request, HttpServletResponse response, String statusCode, String statusMessage) 
+    {
+        try 
+        {
+            response.setContentType("application/json");
+            PrintWriter out = response.getWriter();
+            
+            JSONObject responseMap = new JSONObject().put("message", statusMessage);
+            String res = responseMap.toString();
+            
+            out.print(res);
+            response.setStatus(Integer.parseInt(statusCode));
+            SimpleLogger.getInstance().info(Utility.class.getSimpleName(), "Status Code:" + statusCode + "|Message:" + statusMessage);
+        } 
+        catch (Exception e) 
+        {
+            SimpleLogger.getInstance().error(Utility.class.getSimpleName(), e.getMessage());
+        }
+    }
+    
+    public static String[] getPathInfoArray(HttpServletRequest request)
+    {
+        // Split the path info into component strings
+        String pathInfo = request.getPathInfo();
+        if (pathInfo != null)
+        {
+            return pathInfo.substring(1).split("/");
+        }
+        else
+        {
+            return null;
+        }
+    }
+    
     public static int compareFloats(double f1, double f2, float delta)
     {
         if (Math.abs(f1 - f2) < delta)

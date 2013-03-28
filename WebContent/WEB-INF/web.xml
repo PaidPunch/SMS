@@ -72,6 +72,6 @@
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>Offers</servlet-name>
-    <url-pattern>/admin/offers</url-pattern>
+    <url-pattern>/admin/offers/*</url-pattern>
   </servlet-mapping>
 </web-app>

@@ -8,7 +8,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.json.JSONArray;
+import org.json.JSONObject;
 
 import com.model.OfferList;
 import com.server.Constants;
@@ -40,7 +40,21 @@ public class Offers extends LocalCoopServlet
     @Override  
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
     {  
-        JSONArray arrJSON = OfferList.getInstance().getOffersArray();
-        Utility.jsonResponse(request, response, arrJSON);
+        String[] pathArray = Utility.getPathInfoArray(request);
+        if (pathArray != null && pathArray.length >= 1)
+        {
+            String requestType = pathArray[0];
+            if (requestType.equals("analytics"))
+            {
+                JSONObject analyticsJSON = OfferList.getInstance().getOffersAnalytics();
+                Utility.jsonResponse(request, response, analyticsJSON);
+            }
+        }
+        else
+        {
+            // Unknown offers request
+            SimpleLogger.getInstance().error(currentClassName, "UnknownOffersRequest");
+            Utility.errorResponse(request, response, "403", "Unknown Request");
+        }
     }
 }

@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -22,9 +23,8 @@ public class OfferList extends DataObjectBase
 {
     private static OfferList singleton;
     private ArrayList<OfferData> offerArray;
-    
-    private HashMap<String, HashMap<String,ArrayList<JSONObject>>> analyticsStructure;
-    private JSONArray arrayOfAnalytics;
+
+    private JSONObject analyticsObject;
     
     private OfferList()
     {
@@ -40,6 +40,13 @@ public class OfferList extends DataObjectBase
     {
         refreshBusinessesFromSDBIfNecessary();
         return offerArray;
+    }
+    
+    public JSONObject getOffersAnalytics()
+    {
+        refreshBusinessesFromSDBIfNecessary();
+           
+        return analyticsObject;
     }
     
     private void refreshBusinessesFromSDBIfNecessary()
@@ -64,39 +71,187 @@ public class OfferList extends DataObjectBase
     
     private void refreshAnalytics()
     {
-        arrayOfAnalytics = new JSONArray();
-        analyticsStructure = new HashMap<String,HashMap<String,ArrayList<JSONObject>>>();
+        analyticsObject = new JSONObject();
+        
+        // Start by bucketizing offers/offerRecords/redeemRecords
+        HashMap<String, HashMap<String,ArrayList<JSONObject>>> analyticsStructure = bucketizeAllObjects();
+        
+        try
+        {            
+            JSONArray monthlyArray = createMonthlyArray(analyticsStructure);
+            analyticsObject.put("monthByWeeks", monthlyArray);
+            
+            // Create per day structure for latest week
+            Date latestWeek = null;
+            HashMap<String,ArrayList<JSONObject>> latestWeekArray = null;
+            // Start by finding latest week
+            for (Map.Entry<String, HashMap<String,ArrayList<JSONObject>>> entry : analyticsStructure.entrySet())
+            {
+                Date currentWeek = Utility.parseDatetimeString(entry.getKey());
+                if (latestWeek == null || latestWeek.before(currentWeek))
+                {
+                    latestWeek = currentWeek;
+                    latestWeekArray = entry.getValue();
+                }
+            }
+            
+            analyticsObject.put("latestWeek", Utility.convertToJavascriptDatetimeFormat(Utility.getDatetimeInUTC(latestWeek)));
+            
+            JSONArray weeklyArray = createWeeklyArray(analyticsStructure, latestWeek, latestWeekArray);
+            analyticsObject.put("weekByDays", weeklyArray);
+            
+            JSONObject businessesObject = createBusinessesObject(analyticsStructure, latestWeek, latestWeekArray);
+            analyticsObject.put("businesses", businessesObject);
+        }
+        catch (Exception e)
+        {
+            SimpleLogger.getInstance().error(Utility.class.getSimpleName(), e.getMessage());
+        }         
+    }
+    
+    private HashMap<String, HashMap<String,ArrayList<JSONObject>>> bucketizeAllObjects()
+    {
+        HashMap<String,HashMap<String,ArrayList<JSONObject>>> analyticsStructure = new HashMap<String,HashMap<String,ArrayList<JSONObject>>>();
         for (OfferData offer : offerArray)
         {
-            bucketizeHashMapByWeek(offer.getOfferMap(), "Offers");
+            bucketizeHashMapByWeek(offer.getOfferMap(), "Offers", analyticsStructure);
             
             ArrayList<HashMap<String,String>> offerRecords = offer.getOfferRecords();
             for (HashMap<String,String> offerRecord : offerRecords)
             {
-                bucketizeHashMapByWeek(offerRecord, "OfferRecords");
+                bucketizeHashMapByWeek(offerRecord, "OfferRecords", analyticsStructure);
             }
             
             ArrayList<HashMap<String,String>> redeemRecords = offer.getRedeemRecords();
             for (HashMap<String,String> redeemRecord : redeemRecords)
             {
-                bucketizeHashMapByWeek(redeemRecord, "RedeemRecords");
+                bucketizeHashMapByWeek(redeemRecord, "RedeemRecords", analyticsStructure);
             }
         }
-        
+        return analyticsStructure;
+    }
+    
+    private JSONArray createMonthlyArray(HashMap<String,HashMap<String,ArrayList<JSONObject>>> analyticsStructure)
+    {
+        JSONArray monthlyArray = new JSONArray();
         try
         {
+            // Create per-week structure
             for (Map.Entry<String, HashMap<String,ArrayList<JSONObject>>> entry : analyticsStructure.entrySet())
             {
-                JSONObject listOfRecordsJSON = getJSONOfCategory(entry.getValue());
+                JSONObject listOfRecordsJSON = getJSONOfCounts(entry.getValue());
                 // Insert week
                 listOfRecordsJSON.put("week", entry.getKey());
-                arrayOfAnalytics.put(listOfRecordsJSON);
-            }    
+                monthlyArray.put(listOfRecordsJSON);
+            }            
+        }
+        catch (Exception e)
+        {
+            SimpleLogger.getInstance().error(Utility.class.getSimpleName(), e.getMessage());
+        }  
+        return monthlyArray;
+    }
+    
+    private JSONArray createWeeklyArray(HashMap<String,HashMap<String,ArrayList<JSONObject>>> analyticsStructure, Date latestWeek, HashMap<String,ArrayList<JSONObject>> latestWeekArray)
+    {
+        JSONArray weeklyArray = new JSONArray();
+        try
+        {                        
+            // Handle offers for the week
+            int offersCountByDay[] = new int[7];
+            ArrayList<JSONObject> offersArray = latestWeekArray.get("Offers");
+            for (JSONObject offer : offersArray)
+            {
+                Date currentDate = Utility.parseDatetimeString(offer.getString("createdDatetime"));
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(currentDate);
+                cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+                int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK) - 1;
+                offersCountByDay[dayOfWeek] = offersCountByDay[dayOfWeek] + 1;
+            }
+            // Handle offer records for the week
+            int offerRecordsCountByDay[] = new int[7];
+            ArrayList<JSONObject> offerRecordsArray = latestWeekArray.get("OfferRecords");
+            for (JSONObject offerRecord : offerRecordsArray)
+            {
+                Date currentDate = Utility.parseDatetimeString(offerRecord.getString("createdDatetime"));
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(currentDate);
+                cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+                int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK) - 1;
+                offerRecordsCountByDay[dayOfWeek] = offerRecordsCountByDay[dayOfWeek] + 1;
+            }
+            // Handle redeem records for the week
+            int redeemRecordsCountByDay[] = new int[7];
+            ArrayList<JSONObject> redeemRecordsArray = latestWeekArray.get("RedeemRecords");
+            for (JSONObject redeemRecord : redeemRecordsArray)
+            {
+                Date currentDate = Utility.parseDatetimeString(redeemRecord.getString("createdDatetime"));
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(currentDate);
+                cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+                int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK) - 1;
+                redeemRecordsCountByDay[dayOfWeek] = redeemRecordsCountByDay[dayOfWeek] + 1;
+            }
+            // Create json structure
+            Date currentDate = latestWeek;
+            for (int i = 0; i < 7; i++)
+            {
+                JSONObject dayJSON = new JSONObject();
+                dayJSON.put("Offers", offersCountByDay[i]);
+                dayJSON.put("OfferRecords", offerRecordsCountByDay[i]);
+                dayJSON.put("RedeemRecords", redeemRecordsCountByDay[i]);
+                dayJSON.put("day", Utility.convertToJavascriptDatetimeFormat(Utility.getDatetimeInUTC(currentDate)));
+                
+                // Increment to next day
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(currentDate);
+                cal.add(Calendar.DATE, 1);
+                currentDate = cal.getTime();
+                
+                weeklyArray.put(dayJSON);
+            }
         }
         catch (Exception e)
         {
             SimpleLogger.getInstance().error(Utility.class.getSimpleName(), e.getMessage());
         } 
+        return weeklyArray;
+    }
+    
+    private JSONObject createBusinessesObject(HashMap<String,HashMap<String,ArrayList<JSONObject>>> analyticsStructure, Date latestWeek, HashMap<String,ArrayList<JSONObject>> latestWeekArray)
+    {
+        JSONObject businessesObject = new JSONObject();
+        try
+        {            
+            // Count number of offers per bizCode
+            HashMap<String,Integer> businessesMap = new HashMap<String,Integer>();
+            ArrayList<JSONObject> offersArray = latestWeekArray.get("Offers");
+            for (JSONObject offer : offersArray)
+            {
+                String bizCode = offer.getString("bizCode");
+                if (businessesMap.containsKey(bizCode))
+                {
+                    Integer value = businessesMap.get(bizCode);
+                    businessesMap.put(bizCode, value + 1);
+                }
+                else
+                {
+                    businessesMap.put(bizCode, 1);
+                }
+            }
+            
+            // Put into a JSONObject
+            for (Map.Entry<String, Integer> entry : businessesMap.entrySet())
+            {
+                businessesObject.put(entry.getKey(), entry.getValue());
+            }
+        }
+        catch (Exception e)
+        {
+            SimpleLogger.getInstance().error(Utility.class.getSimpleName(), e.getMessage());
+        } 
+        return businessesObject;
     }
     
     private Date getFirstOfPreviousMonth()
@@ -163,7 +318,7 @@ public class OfferList extends DataObjectBase
         return current;
     }
     
-    private void bucketizeHashMapByWeek(HashMap<String,String> mp, String category)
+    private void bucketizeHashMapByWeek(HashMap<String,String> mp, String category, HashMap<String, HashMap<String,ArrayList<JSONObject>>> analyticsStructure)
     {
         Date offerDate = Utility.getCreatedDatetime(mp);
         Date sundayOfWeek = Utility.getSundayOfWeek(offerDate);
@@ -189,35 +344,23 @@ public class OfferList extends DataObjectBase
         categoryItems.add(Utility.convertHashMapToJSONObject(mp));
     }
     
-    private JSONObject getJSONOfCategory(HashMap<String,ArrayList<JSONObject>> mp)
+    private JSONObject getJSONOfCounts(HashMap<String,ArrayList<JSONObject>> mp)
     {
-        JSONObject listOfRecordsJSON = new JSONObject();
+        JSONObject listOfCountsJSON = new JSONObject();
         try
         {
             for (Map.Entry<String, ArrayList<JSONObject>> entry : mp.entrySet())
             {
-                JSONArray arrayJSON = new JSONArray();
                 ArrayList<JSONObject> arrayOfJSONObjects = entry.getValue();
-                for (JSONObject obj : arrayOfJSONObjects)
-                {
-                    arrayJSON.put(obj);
-                }
-                listOfRecordsJSON.put(entry.getKey(), arrayJSON);
+                listOfCountsJSON.put(entry.getKey(), arrayOfJSONObjects.size());
             }    
         }
         catch (Exception e)
         {
             SimpleLogger.getInstance().error(Utility.class.getSimpleName(), e.getMessage());
         } 
-        return listOfRecordsJSON;
-    }
-    
-    public JSONArray getOffersArray()
-    {
-        refreshBusinessesFromSDBIfNecessary();
-           
-        return arrayOfAnalytics;
-    }
+        return listOfCountsJSON;
+    }  
     
     // Singleton 
     public static synchronized OfferList getInstance() 

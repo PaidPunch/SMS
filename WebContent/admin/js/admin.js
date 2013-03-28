@@ -7,7 +7,7 @@
 $(document).ready( function() {   
 	$.ajax({
         type : "get",
-        url : "offers",
+        url : "offers/analytics",
         success : function(responseJson) {        	
         	display_charts(responseJson);
         }
@@ -16,32 +16,17 @@ $(document).ready( function() {
 
 function display_charts(responseJson)
 {
-	display_monthly_chart(responseJson);
+	display_monthly_chart(responseJson.monthByWeeks);
 	
-	// Get latest week
-	var arrayLength = responseJson.length;
-	var latestWeek = null;
-	var latestWeekValues = null;
-	for (var i = 0; i < arrayLength; i += 1)
-	{
-		var currentWeekValues = responseJson[i];
-		var currentWeek = new Date(currentWeekValues.week);
-		if (latestWeek == null || currentWeek > latestWeek)
-		{
-			latestWeek = currentWeek;
-			latestWeekValues = currentWeekValues;
-		}
-	}
+	display_weekly_chart(responseJson.weekByDays, responseJson.latestWeek);
 	
-	display_weekly_chart(latestWeekValues);
-	
-	display_businesses_pie_chart(latestWeekValues.Offers);
+	display_businesses_pie_chart(responseJson.businesses);
 }
 
-function display_monthly_chart(responseJson) 
+function display_monthly_chart(month) 
 {	
 	if ($("#monthly-bar-chart").length) {
-		var arrayLength = responseJson.length;
+		var arrayLength = month.length;
 		
 		var offerData = [];
 		var offerRecordData = [];
@@ -52,7 +37,7 @@ function display_monthly_chart(responseJson)
 		
 		for (var i = 0; i < arrayLength; i += 1)
 		{
-			var currentWeekValues = responseJson[i];
+			var currentWeekValues = month[i];
 			var currentWeek = new Date(currentWeekValues.week);
 			
 			if (minval == null || currentWeek < minval)
@@ -66,9 +51,9 @@ function display_monthly_chart(responseJson)
 			}
 
 			xAxisTicks.push(currentWeek.getTime());
-			offerData.push([currentWeek.getTime(), currentWeekValues.Offers.length]);
-			offerRecordData.push([currentWeek.getTime(), currentWeekValues.OfferRecords.length]);
-			redeemRecordData.push([currentWeek.getTime(), currentWeekValues.RedeemRecords.length]);
+			offerData.push([currentWeek.getTime(), currentWeekValues.Offers]);
+			offerRecordData.push([currentWeek.getTime(), currentWeekValues.OfferRecords]);
+			redeemRecordData.push([currentWeek.getTime(), currentWeekValues.RedeemRecords]);
 		}
 		
 		var individualWidth = 20 * 60 * 60 * 1000;
@@ -132,64 +117,34 @@ function display_monthly_chart(responseJson)
 	};
 };
 
-function display_weekly_chart(latestWeekValues) 
+function display_weekly_chart(latestWeekValues, latestWeek) 
 {	
 	if ($("#weekly-bar-chart").length) {
 		
 		// Store the start of the week
-		var minval = new Date(latestWeekValues.week);
-		
-		// Count offers by day		
-		var offersCountsByDay = [0,0,0,0,0,0,0];
-		var arrayOffersLength = latestWeekValues.Offers.length;
-		for (var i = 0; i < arrayOffersLength; i += 1)
-		{
-			var currentDatetime = new Date(latestWeekValues.Offers[i].createdDatetime);
-			var currentDay = new Date(currentDatetime.getFullYear(), currentDatetime.getMonth(), currentDatetime.getDate(), 0, 0, 0, 0);
-			offersCountsByDay[currentDay.getDay()] = offersCountsByDay[currentDay.getDay()] + 1;
-		}
-		
-		// Count offerRecords by day		
-		var offerRecordsCountsByDay = [0,0,0,0,0,0,0];
-		var arrayOfferRecordsLength = latestWeekValues.OfferRecords.length;
-		for (var i = 0; i < arrayOfferRecordsLength; i += 1)
-		{
-			var currentDatetime = new Date(latestWeekValues.OfferRecords[i].createdDatetime);
-			var currentDay = new Date(currentDatetime.getFullYear(), currentDatetime.getMonth(), currentDatetime.getDate(), 0, 0, 0, 0);
-			offerRecordsCountsByDay[currentDay.getDay()] = offerRecordsCountsByDay[currentDay.getDay()] + 1;
-		}
-		
-		// Count redeemRecords by day		
-		var redeemRecordsCountsByDay = [0,0,0,0,0,0,0];
-		var arrayRedeemRecordsLength = latestWeekValues.RedeemRecords.length;
-		for (var i = 0; i < arrayRedeemRecordsLength; i += 1)
-		{
-			var currentDatetime = new Date(latestWeekValues.RedeemRecords[i].createdDatetime);
-			var currentDay = new Date(currentDatetime.getFullYear(), currentDatetime.getMonth(), currentDatetime.getDate(), 0, 0, 0, 0);
-			redeemRecordsCountsByDay[currentDay.getDay()] = redeemRecordsCountsByDay[currentDay.getDay()] + 1;
-		}
+		var minval = new Date(latestWeek);
 		
 		var offerData = [];
 		var offerRecordData = [];	
 		var redeemRecordData = [];
 		var xAxisTicks = [];
 		
-		var currentDate = new Date(minval.getTime());
+		var currentDate = new Date(latestWeek);
 		for (var i = 0; i < 7; i += 1)
 		{
-			if (offersCountsByDay[i] > 0)
+			if (latestWeekValues[i].Offers > 0)
 			{
-				offerData.push([currentDate.getTime(), offersCountsByDay[i]]);
+				offerData.push([currentDate.getTime(), latestWeekValues[i].Offers]);
 			}
 			
-			if (offerRecordsCountsByDay[i] > 0)
+			if (latestWeekValues[i].OfferRecords > 0)
 			{
-				offerRecordData.push([currentDate.getTime(), offerRecordsCountsByDay[i]]);
+				offerRecordData.push([currentDate.getTime(), latestWeekValues[i].OfferRecords]);
 			}
 			
-			if (redeemRecordsCountsByDay[i] > 0)
+			if (latestWeekValues[i].RedeemRecords > 0)
 			{
-				redeemRecordData.push([currentDate.getTime(), redeemRecordsCountsByDay[i]]);
+				redeemRecordData.push([currentDate.getTime(), latestWeekValues[i].RedeemRecords]);
 			}
 			
 			xAxisTicks.push(currentDate.getTime());
@@ -259,36 +214,18 @@ function display_weekly_chart(latestWeekValues)
 	};
 };
 
-function display_businesses_pie_chart(offersArray)
-{
-	console.log(offersArray);
-	
+function display_businesses_pie_chart(businesses)
+{	
 	/* pie chart */	
 	if ($('#businesses-pie-chart').length) {
-		
-		var offersDictionary = {};
-		var arrayLength = offersArray.length;
-		for (var i = 0; i < arrayLength; i += 1)
-		{
-			var offer = offersArray[i];
-			var bizcode = offer.bizCode;
-			if (offersDictionary[bizcode] == null)
-			{
-				offersDictionary[bizcode] = 1;
-			}
-			else
-			{
-				offersDictionary[bizcode] = offersDictionary[bizcode] + 1;
-			}
-		}
 
 		var data_pie = [];
 		var index = 0;
-		for (var bizcodename in offersDictionary)
+		for (var bizcodename in businesses)
 		{
 			data_pie[index] = {
 				label : bizcodename,
-				data : offersDictionary[bizcodename]
+				data : businesses[bizcodename]
 			};
 			index = index + 1;
 		}
