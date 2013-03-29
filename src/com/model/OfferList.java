@@ -55,7 +55,7 @@ public class OfferList extends DataObjectBase
         {
             try
             {
-                getOffersFromSDB();
+                offerArray = getOffersFromSDB();
                 refreshAnalytics();
                 
                 lastRefreshTime = new Date();
@@ -160,38 +160,48 @@ public class OfferList extends DataObjectBase
             // Handle offers for the week
             int offersCountByDay[] = new int[7];
             ArrayList<JSONObject> offersArray = latestWeekArray.get("Offers");
-            for (JSONObject offer : offersArray)
+            if (offersArray != null)
             {
-                Date currentDate = Utility.parseDatetimeString(offer.getString("createdDatetime"));
-                Calendar cal = Calendar.getInstance();
-                cal.setTime(currentDate);
-                cal.setTimeZone(TimeZone.getTimeZone("UTC"));
-                int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK) - 1;
-                offersCountByDay[dayOfWeek] = offersCountByDay[dayOfWeek] + 1;
+                for (JSONObject offer : offersArray)
+                {
+                    String currentDateString = offer.getString("createdDatetime");
+                    Date currentDate = Utility.parseDatetimeString(currentDateString);
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(currentDate);
+                    cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+                    int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK) - 1;
+                    offersCountByDay[dayOfWeek] = offersCountByDay[dayOfWeek] + 1;
+                }    
             }
             // Handle offer records for the week
             int offerRecordsCountByDay[] = new int[7];
             ArrayList<JSONObject> offerRecordsArray = latestWeekArray.get("OfferRecords");
-            for (JSONObject offerRecord : offerRecordsArray)
+            if (offerRecordsArray != null)
             {
-                Date currentDate = Utility.parseDatetimeString(offerRecord.getString("createdDatetime"));
-                Calendar cal = Calendar.getInstance();
-                cal.setTime(currentDate);
-                cal.setTimeZone(TimeZone.getTimeZone("UTC"));
-                int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK) - 1;
-                offerRecordsCountByDay[dayOfWeek] = offerRecordsCountByDay[dayOfWeek] + 1;
+                for (JSONObject offerRecord : offerRecordsArray)
+                {
+                    Date currentDate = Utility.parseDatetimeString(offerRecord.getString("createdDatetime"));
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(currentDate);
+                    cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+                    int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK) - 1;
+                    offerRecordsCountByDay[dayOfWeek] = offerRecordsCountByDay[dayOfWeek] + 1;
+                }    
             }
             // Handle redeem records for the week
             int redeemRecordsCountByDay[] = new int[7];
             ArrayList<JSONObject> redeemRecordsArray = latestWeekArray.get("RedeemRecords");
-            for (JSONObject redeemRecord : redeemRecordsArray)
+            if (redeemRecordsArray != null)
             {
-                Date currentDate = Utility.parseDatetimeString(redeemRecord.getString("createdDatetime"));
-                Calendar cal = Calendar.getInstance();
-                cal.setTime(currentDate);
-                cal.setTimeZone(TimeZone.getTimeZone("UTC"));
-                int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK) - 1;
-                redeemRecordsCountByDay[dayOfWeek] = redeemRecordsCountByDay[dayOfWeek] + 1;
+                for (JSONObject redeemRecord : redeemRecordsArray)
+                {
+                    Date currentDate = Utility.parseDatetimeString(redeemRecord.getString("createdDatetime"));
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(currentDate);
+                    cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+                    int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK) - 1;
+                    redeemRecordsCountByDay[dayOfWeek] = redeemRecordsCountByDay[dayOfWeek] + 1;
+                }    
             }
             // Create json structure
             Date currentDate = latestWeek;

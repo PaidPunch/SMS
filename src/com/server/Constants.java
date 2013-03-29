@@ -89,8 +89,8 @@ public class Constants
             SimpleLogger.getInstance().info(Constants.class.getSimpleName(), "Initializing test server endpoints");
             
             // Settings for test server
-            JDBC_URL = "jdbc:mysql://paidpunchtest.csepczasc6nf.us-west-2.rds.amazonaws.com:3306/paidpunchprod";
-            USERID = "paidpunch";
+            JDBC_URL = "jdbc:mysql://paidpunchprod.csepczasc6nf.us-west-2.rds.amazonaws.com:3306/paidpunchprod";
+            USERID = "paidpunchprod";
             PASSWORD = "Biscuit-1";
             
             SUGGESTBUSINESSES_DOMAIN = "SuggestBusinessesTest";

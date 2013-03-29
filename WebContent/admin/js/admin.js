@@ -167,33 +167,42 @@ function display_weekly_chart(latestWeekValues, latestWeek)
 		
 		var individualWidth = 5 * 60 * 60 * 1000;
 		var ds = new Array();
-		ds.push({
-			label : "texts",
-			data : offerData,
-			bars : {
-				show : true,
-				barWidth : individualWidth,
-				order : 1,
-			}
-		});
-		ds.push({
-			label : "offer views",
-			data : offerRecordData,
-			bars : {
-				show : true,
-				barWidth : individualWidth,
-				order : 2
-			}
-		});
-		ds.push({
-			label : "redeem views",
-			data : redeemRecordData,
-			bars : {
-				show : true,
-				barWidth : individualWidth,
-				order : 3
-			}
-		});
+		if (offerData.length > 0)
+		{
+			ds.push({
+				label : "texts",
+				data : offerData,
+				bars : {
+					show : true,
+					barWidth : individualWidth,
+					order : 1,
+				}
+			});	
+		};
+		if (offerRecordData.length > 0)
+		{
+			ds.push({
+				label : "offer views",
+				data : offerRecordData,
+				bars : {
+					show : true,
+					barWidth : individualWidth,
+					order : 2
+				}
+			});	
+		};
+		if (redeemRecordData.length > 0)
+		{
+			ds.push({
+				label : "redeem views",
+				data : redeemRecordData,
+				bars : {
+					show : true,
+					barWidth : individualWidth,
+					order : 3
+				}
+			});	
+		};
 		
 		var maxval = new Date(minval.getTime());
 		minval.setDate(minval.getDate()-1);

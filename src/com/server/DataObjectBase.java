@@ -14,7 +14,7 @@ public class DataObjectBase
         {
             Date currentTime = new Date();
             Date refreshTime = new Date(lastRefreshTime.getTime() + refreshInterval);
-            return (currentTime.compareTo(refreshTime) > 0);    
+            return (currentTime.after(refreshTime));    
         }
         else
         {
